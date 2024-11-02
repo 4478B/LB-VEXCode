@@ -58,6 +58,8 @@ digital_out sintake = digital_out(Brain.ThreeWirePort.D);
 // Limit switch declarations
 limit limitS = limit(Brain.ThreeWirePort.E);
 
+
+
 int auton = 0;
 void autonSelection()
 {
@@ -323,17 +325,27 @@ void driveDeg(int DDegL, int DDegR, int veloc)
         Brain.Screen.clearLine();
       Brain.Screen.print(Inertial.rotation());
 }*/
-void drivePID(double inches, double kP = 110, double kI = 0, double kD = .15, double wheelRadius = 1.375)
+void drivePID(double inches, double kP = 110, double kI = 0, double kD = .15, double goalThreshold = 30)
 {
   // Function to control robot movement using PID
-  int goalMet = 0;                                           // Flag to track if the goal is met
+  int inGoal = 0;                                            // Tracks robot's time in goal threshold
   double currentDelta;                                       // Error between target and current position
   double P = 0, I = 0, D = 0, totalPID;                      // PID terms
   double pollingRate = 20;                                   // Polling rate in ms
-  double target = inches * (360 / (2 * M_PI * wheelRadius)); // Target position in degrees
+  double target = inches * (360 / (2 * M_PI * 1.375));       // Target position in degrees (1.375 is wheelRadius)
 
   double previousDelta = target; // Initialize previous error as target
   double integralSum = 0;        // Cumulative error for integral term
+
+  double startTime = Brain.Timer.time();
+  double timeout = 3000; // max time before PID times out
+  double goalsNeeded = (std::fabs(inches)/5) * pollingRate; // makes time spent in goal proportional to distance
+  if(goalsNeeded == 0){ // sets bounds (max & min) for goals needed to reach goal
+    goalsNeeded = 1;
+  }
+  else if(goalsNeeded > 5){
+    goalsNeeded = 5;
+  } 
 
   // Reset motor encoder value to 0
   mBackLeft.setPosition(0, degrees);
@@ -343,7 +355,9 @@ void drivePID(double inches, double kP = 110, double kI = 0, double kD = .15, do
   mBackRight.setPosition(0, degrees);
   mMidRight.setPosition(0, degrees);
 
-  while (goalMet <= 1)
+
+
+  while (inGoal < goalsNeeded)  // CHECK IF IT SHOULD BE A < or <=
   {
     // Main PID loop; runs until target is reached
     // Read motor position (you can average left and right motor values for straight driving)
@@ -374,10 +388,18 @@ void drivePID(double inches, double kP = 110, double kI = 0, double kD = .15, do
     mFrontRight.spin(forward, totalPID, percent);
 
     // Check if the error is small enough to stop
-    if (fabs(currentDelta) < 30)
+    if (fabs(currentDelta) < goalThreshold)
     {
-      goalMet++;
+      inGoal
     }
+    else{
+      inGoal = 0;
+    }
+    // Check if should timeout
+    if((Brain.Timer.time() - startTime) >= timeout){
+      break;
+    }
+
     // Update the previous error for the next loop
     previousDelta = currentDelta;
 
@@ -392,6 +414,14 @@ void drivePID(double inches, double kP = 110, double kI = 0, double kD = .15, do
   mMidLeft.stop();
   mMidRight.stop();
 }
+
+
+
+
+
+
+
+
 
 void tunerDrivePID(double inches, double kP = 110, double kI = 0, double kD = .15, int ID = -1)
 {
