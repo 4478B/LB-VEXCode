@@ -51,14 +51,13 @@ rotation Rotation = rotation(PORT2);
 
 // Digital-out device declarations
 digital_out sClamp = digital_out(Brain.ThreeWirePort.B);
+digital_out sDoinker = digital_out(Brain.ThreeWirePort.C);
 digital_out sDoor = digital_out(Brain.ThreeWirePort.F);
 digital_out sintake = digital_out(Brain.ThreeWirePort.D);
 
 
 // Limit switch declarations
 limit limitS = limit(Brain.ThreeWirePort.E);
-
-
 
 int auton = 0;
 void autonSelection()
@@ -112,7 +111,6 @@ void pre_auton(void)
 {
   sClamp.set(true);
   Brain.Screen.pressed(autonSelection);
-
   Inertial.calibrate();
   vex ::wait(4, sec);
 }
@@ -909,8 +907,7 @@ void setArm(int armPos)
 void skillsAuto()
 {
 
-  // Grab First Ring
-  // std::cout<<"test"<<std::endl;
+
 
   drivePIDClamp(-200, 40);
   mIntake.spin(fwd, 100, pct);
@@ -919,11 +916,23 @@ inert(-90);
 driveInches(35,50);
 inert(135);
 sClamp.set(true);
-drivePID(-30);
+drivePID(-27);
 drivePID(25);
 inert(90);
 drivePID(130);
 inert(45);
+drivePID(30);
+drivePID(-30);
+inert(180);
+drivePID(108);
+inert(135);
+drivePID(30);
+drivePID(-30);
+inert(270);
+drivePID(108);
+inert(225);
+drivePID(30);
+drivePID(-40);
 drivePID(30);
 
  // lift the lift so it doesnt hit walls
@@ -1037,35 +1046,54 @@ drivePID(-15);
   drivePID(-20);
   */
 }
-void blueMidAuto(){
+void blueMidAuto(int i){
   // Starting position: In blue right corner, facing mobile goal
   drivePID(-27); 
   drivePIDClamp(-300, 30);
-  inert(-104);
+  inert(-104*i);
   wait(500, msec);
   mIntake.spin(forward, 100, pct);
-  drivePID(39);
+  drivePID(36);
   wait(500, msec); 
-  drivePID(-30);
+  drivePID(-27);
   wait(500,msec);
-  inert(-55);
-  setArm(2);
+  inert(-55*i);
+  //setArm(2);
   drivePID(22);
   wait(500,msec);
-  inert(-145);
+ // inert(-145);
   /*drivePID(22);
   wait(300,msec);*/
-  drivePID(-19);
-  inert(-108);
-  drivePID(47);
-  mIntake.stop(coast);
-  inert(-105);
-  setArm(3); 
-  drivePID(5);
-  drivePID(-5);
-  drivePID(3);
+  //drivePID(-19);
+ // inert(-108);
+ // drivePID(47);
+  //mIntake.stop(coast);
+  //inert(-103);
+  //setArm(3);
+ //drivePID(5);
+ // drivePID(-5);
+  //drivePID(3);
+
   drivePID(-10);
-   
+     drivePID(-30);
+/*
+  setArm(3);   
+  inert(-145);
+  drivePID(7);
+*/
+  sClamp.set(true);
+  drivePID(14);
+  inert(35*i);
+  mIntake.stop();
+  drivePID(30);
+  inert(125*i);
+  drivePID(60);     
+  inert(0);
+  drivePIDClamp(-1400,80);
+  wait(300,msec);
+  inert(125*i);
+  mIntake.spin(fwd, 100,pct);
+  drivePID(30);
    
    
    /*drivePID(-11);
@@ -1082,7 +1110,6 @@ void blueMidAuto(){
   wait(1000,msec);
   mIntake.stop(); 
     drivePID(3);
-    
     inert(-145);
     mIntake.spin(fwd,100,pct);
 drivePID(85);
@@ -1271,8 +1298,9 @@ void AWP()
   drivePID(39);
   */
 }
-void halfAWP()
+void halfAWP(int i)
 {
+  /*
   // Brain.Screen.print(mMidLeft.temperature());
   sDoor.set(true);
   // Grab First Ring
@@ -1322,7 +1350,28 @@ void halfAWP()
   sClamp.set(true);
   // Line up to grab second goal
   inert(-260);
-  drivePID(5);
+  drivePID(5);*/
+
+  drivePID(-27); 
+  drivePIDClamp(-300, 30);
+  inert(-104*i);
+  wait(500, msec);
+  mIntake.spin(forward, 100, pct);
+  drivePID(36);
+  wait(500, msec); 
+  drivePID(-27);
+  wait(500,msec);
+  inert(-55*i);
+
+  drivePID(22);
+  wait(500,msec);
+
+  drivePID(-10);
+     drivePID(-30);
+
+  setArm(3);   
+  inert(-145*i);
+  drivePID(7);
 }
 
 void adaptive()
@@ -1345,7 +1394,7 @@ void autonomous(void)
     rightAuto();
     break;
   case 1:
-    blueRightAuto(-1); // redLeftAuto is blueRightAuto but inversed
+    halfAWP(-1); // redLeftAuto is blueRightAuto but inversed
     break;
   case 2:
     blueRightAuto(1);
@@ -1357,13 +1406,13 @@ void autonomous(void)
     AWP();
     break;
   case 5:
-    halfAWP();
+    halfAWP(1);
     break;
   case 6:
-    adaptive();
+    blueMidAuto(-1);
     break;
   case 7:
-    blueMidAuto();
+    blueMidAuto(1);
     break;
   }
   // inert(90);
@@ -1527,6 +1576,12 @@ void usercontrol(void)
       sClamp.set(clamp);
       vex ::wait(240, msec);
     }
+
+    if (Controller1.ButtonDown.pressing())
+    {
+      sDoinker.set(!sDoinker.value());
+      vex ::wait(240, msec);
+    }
     //cannot call the same pos twice
     if((Controller1.ButtonL1.pressing()||Controller2.ButtonL1.pressing()) && pidRunning==false && armPos!=1){ 
       pidRunning = true; //starts the PID running
@@ -1645,11 +1700,11 @@ void usercontrol(void)
         }
         // Stop the motors once goal is met
     }
-    else if(Controller1.ButtonDown.pressing()){//code for correcting inacuracies in the code manually
-      mLift.spin(reverse,70,pct);
-      mLift.setPosition(0,deg);
-      armPos = 1;
-    }
+    //else if(Controller1.ButtonDown.pressing()){//code for correcting inacuracies in the code manually
+    //  mLift.spin(reverse,70,pct);
+    //  mLift.setPosition(0,deg);
+   //   armPos = 1;
+    //}
     else if(Controller2.ButtonR1.pressing()){
       mLift.spin(fwd,15,pct);
     }
