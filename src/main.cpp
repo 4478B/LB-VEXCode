@@ -46,7 +46,7 @@ motor mIntake = motor(PORT1, ratio6_1, false);
 motor mLift = motor(PORT3, ratio18_1, true);
 motor mLift2 = motor(PORT4, ratio18_1, false);
 distance ringCheck = distance(PORT17);
-inertial Inertial = inertial(PORT11);
+inertial Inertial = inertial(PORT20);
 rotation Rotation = rotation(PORT2);
 
 // Digital-out device declarations
@@ -414,14 +414,6 @@ void drivePID(double inches, double kP = 110, double kI = 0, double kD = .15, do
   mMidLeft.stop();
   mMidRight.stop();
 }
-
-
-
-
-
-
-
-
 
 void tunerDrivePID(double inches, double kP = 110, double kI = 0, double kD = .15, int ID = -1)
 {
@@ -807,22 +799,22 @@ void tunePID()
 
 void GraphPID(double rangeP, double rangeD, double guessP, double guessD, int sqrtTests)
 {
-  double currentP = guessP - rangeP;
+  double currentP = guessP - rangeP;  // Values representing current search boundaries
   double currentD = guessD - rangeD;
-  double minP = currentP;
+  double minP = currentP;             // Search starts at the minimum, goes to maximum
   double deltaP = rangeP / sqrtTests;
   double deltaD = rangeD / sqrtTests;
   int maxID = sqrtTests ^ 2 - 1;
-  int ID = 0;
+  int ID = 0;                    // IDs represent individual tests to make them replicable
   std::cout << "What is current ID (0 if starting): ";
-  std::cin >> ID;
+  std::cin >> ID;            // retrieves user input so it can be run in mutliple sessions
   std::cout << std::endl;
   while (ID <= maxID)
   {
 
-    tunerDrivePID(100, currentP, 0, currentD, ID);
+    tunerDrivePID(100, currentP, 0, currentD, ID); // Custom PID with more logging
 
-    if (ID % 10 == 9)
+    if (ID % 10 == 9)     // This is the loop that creates the gridlike pattern
     {
       currentD += deltaD;
       currentP = minP;
@@ -831,64 +823,86 @@ void GraphPID(double rangeP, double rangeD, double guessP, double guessD, int sq
     {
       currentP += deltaP;
     }
-    ID++;
+    ID++;         // assigns new ID so next test can start
   }
 }
 
-void setArm(double targetDeg)
+void setArm(int armPos)
 {
+  double targetDeg;
+  if(armPos==1){
+    targetDeg = 0;
+  }
+  else if(armPos==2){
+    targetDeg = 25;
+  }
+  else if(armPos==3){
+    targetDeg = 130;
+  }
+
   // Function to control robot movement using PID
-  double kP = 99.5;
-  double kI = 0;
-  double kD = .15;
-  int goalMet = 0;                      // Flag to track if the goal is met
-  double currentDelta;                  // Error between target and current position
-  double P = 0, I = 0, D = 0, totalPID; // PID terms
-  double pollingRate = 20;              // Polling rate in ms // Target position in degrees
+        double P, I, D, totalPID;
+        double kP = 1500;
+        double kI = 0;
+        double kD = 0.01;                     // Flag to track if the goal is met
+        double currentDelta;                  // Error between target and current position
+        P = 0, I = 0, D = 0; // PID terms            // Polling rate in ms // Target position in degrees
+        int goalMet = 0;              // Flag to track if the goal is met      // Error between target and current position
+         // PID terms      // Polling rate in ms // Target position in degrees
 
-  double previousDelta = targetDeg; // Initialize previous error as target
-  double integralSum = 0;           // Cumulative error for integral term
+        double previousDelta; // Initialize previous error as target
+        double integralSum;     // Cumulative error for integral term
 
+        double currentPosition = Rotation.angle(deg); 
   // Reset motor encoder value to 0
   mLift.setPosition(0, degrees);
 
-  if (goalMet <= 1)
-  {
-    // Main PID loop; runs until target is reached
-    // Read motor position (you can average left and right motor values for straight driving)
-    double currentPosition = Rotation.angle(deg);
+  while (goalMet <= 1)
+        {
+          // Main PID loop; runs until target is reached
+          // Read motor position (you can average left and right motor values for straight driving)
+          double currentPosition = Rotation.angle(deg);
+          double error = targetDeg - currentPosition;
 
-    // Calculate the current error
-    currentDelta = targetDeg - currentPosition;
+          if(error>180){
+            error-=360;
+          }
+          else if(error<-180){
+            error+=360;
+          }
 
-    // Proportional: Larger error results in larger response
-    P = (kP / 1000) * currentDelta;
+          // Calculate the current error
+          currentDelta = error;
 
-    // Integral: Sum of all errors helps correct for small errors over time
-    integralSum += currentDelta;
-    I = kI * integralSum;
+          // Proportional: Larger error results in larger response
+          P = (kP / 1000) * currentDelta;
 
-    // Derivative: React to the rate of error change
-    D = kD * (currentDelta - previousDelta) / pollingRate;
+          // Integral: Sum of all errors helps correct for small errors over time
+          integralSum += currentDelta;
+          I = kI * integralSum;
 
-    // Calculate total PID response
-    totalPID = P + I + D;
+          // Derivative: React to the rate of error change
+          D = kD * (currentDelta - previousDelta) / 20;//
 
-    // Use totalPID to move motors proportionally
-    mLift.spin(forward, totalPID, percent);
+          // Calculate total PID response
+          totalPID = P + I + D;
 
-    // Check if the error is small enough to stop
-    if (fabs(currentDelta) < 30)
-    {
-      goalMet++;
-    }
-    // Update the previous error for the next loop
-    previousDelta = currentDelta;
-
-    // Wait for the polling rate before next iteration
-    // changed to nothing
-  }
+          // Use totalPID to move motors proportionally
+          mLift.spin(forward, totalPID, percent); //THIS MIGHT NEED TO BE REVERSED
+          mLift2.spin(forward, totalPID, percent);
+          // Check if the error is small enough to stop
+          if (fabs(currentDelta) < 2)
+          {
+            goalMet++;
+          }
+          // Update the previous error for the next loop
+          previousDelta = currentDelta;
+          // Wait for the polling rate before next iteration
+          // changed to nothing
+          wait(20,msec);
+        }
   // Stop the motors once goal is met
+  mLift.stop(hold);
   mLift.stop(hold);
 }
 
@@ -899,10 +913,22 @@ void skillsAuto()
   // std::cout<<"test"<<std::endl;
 
   drivePIDClamp(-200, 40);
+  mIntake.spin(fwd, 100, pct);
+wait(700,msec);
+inert(-90);
+driveInches(35,50);
+inert(135);
+sClamp.set(true);
+drivePID(-30);
+drivePID(25);
+inert(90);
+drivePID(130);
+inert(45);
+drivePID(30);
 
  // lift the lift so it doesnt hit walls
   // drive and clamp
-
+/*
   mIntake.spin(fwd, 100, pct);
 wait(700,msec);
 inert(100);
@@ -910,6 +936,7 @@ drivePID(-70);
   sClamp.set(true);
   wait(500,msec);
   drivePID(20);
+  */
  /*
 mIntake.spin(fwd,100,pct);
 wait(700,msec);
@@ -1011,7 +1038,44 @@ drivePID(-15);
   */
 }
 void blueMidAuto(){
-  drivePID(-15.75);
+  // Starting position: In blue right corner, facing mobile goal
+  drivePID(-27); 
+  drivePIDClamp(-300, 30);
+  inert(-104);
+  wait(500, msec);
+  mIntake.spin(forward, 100, pct);
+  drivePID(39);
+  wait(500, msec); 
+  drivePID(-30);
+  wait(500,msec);
+  inert(-55);
+  setArm(2);
+  drivePID(22);
+  wait(500,msec);
+  inert(-145);
+  /*drivePID(22);
+  wait(300,msec);*/
+  drivePID(-19);
+  inert(-108);
+  drivePID(47);
+  mIntake.stop(coast);
+  inert(-105);
+  setArm(3); 
+  drivePID(5);
+  drivePID(-5);
+  drivePID(3);
+  drivePID(-10);
+   
+   
+   
+   /*drivePID(-11);
+  inert(80);
+  
+  
+  
+  
+  
+  /*drivePID(-15.75);
   inert(-92);
   drivePID(-4);
   mIntake.spin(forward, 100, pct);
@@ -1037,7 +1101,7 @@ sintake.set(false);
 drivePID(-56);
 inert(-30);
 drivePID(30);
-/*sClamp.set(true);
+sClamp.set(true);
 drivePID(10);
 
 inert(65);
@@ -1053,7 +1117,9 @@ void redleftAuto()
   // Turn on intake
   mIntake.spin(forward, 100, pct);
   // Turn towards mid ring stack
-  inert(140);
+  inert(140-34);
+
+  Inertial.setHeading(140,deg);
   // Pick up bottom ring
   drivePID(25);
   wait(200, msec);
@@ -1542,7 +1608,7 @@ void usercontrol(void)
 
           if(armCount%15==0 && armCount>=50){
             if(fabs(prevRot-currentPosition)<30){
-              skip==true;
+              //skip=true; The arm is working fine without this, but can add back if needed
             }
             else{
               prevRot = currentPosition;
