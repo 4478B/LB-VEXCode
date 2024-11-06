@@ -59,59 +59,72 @@ digital_out sintake = digital_out(Brain.ThreeWirePort.D);
 // Limit switch declarations
 limit limitS = limit(Brain.ThreeWirePort.E);
 
+void printCenter(String input){
+  // Screen Size (x,y) = (480, 240)
+  int width = Brain.Screen.getStringWidth(input);
+  int xOffset = 240 - width/2
+  if (width <= 480){
+    Brain.Screen.clearLine();
+    Brain.Screen.printAt(input, xOffset, 120);
+  }
+}
+
 int auton = 0;
+int autonCount = 7;
 void autonSelection()
 {
-  if (auton <= 7)
-  {
-    auton++;
-  }
-  else
-  {
-    auton = 0;
-  }
+  auton = (auton + 1)%(autonCount + 1); // loops 1 through the auton count
+  Brain.Screen.setfont(FontType.MONO40);
   switch (auton)
   {
   case 0:
     Brain.Screen.clearLine();
-    Brain.Screen.print("Right side");
+    printCenter("Right side");
     break;
   case 1:
     Brain.Screen.clearLine();
-    Brain.Screen.print("Red Left Auto");
+    printCenter("Red Left Auto");
     break;
   case 2:
     Brain.Screen.clearLine();
-    Brain.Screen.print("Blue Right Auto");
+    printCenter("Blue Right Auto");
     break;
   case 3:
     Brain.Screen.clearLine();
-    Brain.Screen.print("Skills");
+    printCenter("Skills");
     break;
   case 4:
     Brain.Screen.clearLine();
-    Brain.Screen.print("AWP");
+    printCenter("AWP");
     break;
   case 5:
     Brain.Screen.clearLine();
-    Brain.Screen.print("Half AWP");
+    printCenter("Half AWP");
     break;
   case 6:
     Brain.Screen.clearLine();
-    Brain.Screen.print("adaptive");
+    printCenter("adaptive");
     break;
   case 7:
     Brain.Screen.clearLine();
-    Brain.Screen.print("blue Mid Auto");
+    printCenter("blue Mid Auto");
     break;
   }
+  Brain.Screen.setFont(FontType.MONO20);
 }
 
 void pre_auton(void)
 {
   sClamp.set(true);
-  Brain.Screen.pressed(autonSelection);
   Inertial.calibrate();
+  while(Inertial.isCalibrating()){ // temporarily freezes robot during sensor calibration
+    Brain.Screen.clear()
+    printCenter("Inertial Sensor Calibrating")
+    wait(50, msec)
+  }
+  Brain.Screen.clear();
+  Brain.Screen.pressed(autonSelection);
+  
   vex ::wait(4, sec);
 }
 
@@ -512,6 +525,26 @@ void tunerDrivePID(double inches, double kP = 110, double kI = 0, double kD = .1
               << timeElapsed << "," << maxPitch << ","
               << motorHeat << std::endl;
   }
+}
+
+void odometry(){
+
+
+  // Initialize starting values
+  double leftPos = mMidLeft.position();
+  double rightPos = mMidRight.position();
+  double prevLeftPosition, prevRightPosition;
+  double deltaLeft, deltaRight;
+  double totalDeltaLeft = 0, totalDeltaRight = 0;
+  double theta = Intertial.heading(); // make sure in radians
+  double globalX = 0, globalY = 0;
+
+
+
+
+
+
+
 }
 
 /*
