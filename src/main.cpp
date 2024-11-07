@@ -69,13 +69,13 @@ void printCenter(String input){
   }
 }
 
-int auton = 0;
+int autonSelection = 0;
 int autonCount = 7;
 void autonSelection()
 {
-  auton = (auton + 1)%(autonCount + 1); // loops 1 through the auton count
+  autonSelection = (autonSelection + 1)%(autonCount + 1); // loops 1 through the auton count
   Brain.Screen.setfont(FontType.MONO40);
-  switch (auton)
+  switch (autonSelection)
   {
   case 0:
     Brain.Screen.clearLine();
@@ -531,15 +531,20 @@ void odometry(){
 
 
   // Initialize starting values
-  double leftPos = mMidLeft.position();
-  double rightPos = mMidRight.position();
-  double prevLeftPosition, prevRightPosition;
+  double leftPos, rightPos, perpPos;
+  double prevLeftPosition = 0 , prevRightPosition = 0;
   double deltaLeft, deltaRight;
   double totalDeltaLeft = 0, totalDeltaRight = 0;
-  double theta = Intertial.heading(); // make sure in radians
+  double theta = Intertial.heading() * math.pi / 180; // only working with radians in odom
   double globalX = 0, globalY = 0;
 
+  bool odomRunning = true;
+  while(odomRunning){
+    leftPos = mMidLeft.position();
+    rightPos = mMidRight.position();
 
+
+  }
 
 
 
@@ -1421,7 +1426,7 @@ void autonomous(void)
   /*Brain.Screen.clearLine();
   Brain.Screen.print(mBackRight.position(degrees));*/
   // inert(90);
-  switch (auton)
+  switch (autonSelection)
   {
   case 0:
     rightAuto();
