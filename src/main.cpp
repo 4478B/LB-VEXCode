@@ -1509,8 +1509,11 @@ double targetDegInp;
 
 bool skip = false;
 double prevRot = 0;
+
+event Event;
 void usercontrol(void)
 {
+  thread
   mBackLeft.stop(coast);
   mBackRight.stop(coast);
   mFrontLeft.stop(coast);
@@ -1626,18 +1629,22 @@ void usercontrol(void)
       armPos =1; //sets the position of the arm, stores in variable 
       targetDegInpRot = 0;  //rotation sensor value for PID
       targetDegInp = 0; //tune according to motor encoder values
+      Event(setArm(1))
     }
     else if((Controller1.ButtonL2.pressing()||Controller2.ButtonL2.pressing()) && pidRunning==false  && armPos!=2){//cannot call the same pos twice
       pidRunning = true;
       armPos=2;
       targetDegInpRot = 25; //rotation sensor value
       targetDegInp = 65; //tune according to motor encoder values, could be negative idk
+       Event(setArm(2));
     }
     else if((Controller1.ButtonLeft.pressing()||Controller2.ButtonLeft.pressing()) && pidRunning==false  && armPos!=3){
       pidRunning = true;
       armPos=3;
       targetDegInpRot = 131.5;
-      targetDegInp = 220; //tune according to motor encoder values, could be negative idk
+      targetDegInp = 220;
+      Event(setArm(3));
+       //tune according to motor encoder values, could be negative idk
     }
 
 
@@ -1652,6 +1659,9 @@ void usercontrol(void)
       mLift.stop(hold);
     }
 */
+
+//THIS IS THE ARM CODE WITHOUT MULTITHREADING
+/*
     if(Controller2.ButtonB.pressing()){
       mLift.setPosition(0,deg);
       mLift.stop(hold);
@@ -1752,7 +1762,8 @@ void usercontrol(void)
     else{
       mLift.stop(hold);
       mLift2.stop(hold);
-    }
+    }*/
+
     //This is the motor encoder version <------------------------------------
     /*
     if(pidRunning==true){
@@ -1825,197 +1836,6 @@ void usercontrol(void)
     else{
       mLift.stop(hold);
     }*/
-    //THIS IS THE INCORRECT ARM CODE
-      /*  if ((Controller1.ButtonL1.pressing())||(armPos==1&&running==true))
-        {
-          if (definedVar == false && running == false)
-          {
-            double targetDeg = 355;
-            int goalMet = 0;                       // Flag to track if the goal is met
-            double currentDelta;                  // Error between target and current position
-            double P = 0, I = 0, D = 0, totalPID; // PID terms
-            double pollingRate = 20;              // Polling rate in ms // Target position in degrees
-
-            double previousDelta = targetDeg; // Initialize previous error as target
-            double integralSum = 0;           // Cumulative error for integral term
-
-            // Reset motor encoder value to 0
-            mLift.setPosition(0, degrees);
-
-            definedVar = true;
-            running = true;
-            armPos = 1;
-          }
-          if (goalMet <= 1 && running == true && armPos == 1)
-          {
-            // Main PID loop; runs until target is reached
-            // Read motor position (you can average left and right motor values for straight driving)
-            double currentPosition = Rotation.angle(deg);
-
-            // Calculate the current error
-            currentDelta = targetDeg - currentPosition;
-
-            // Proportional: Larger error results in larger response
-            P = (kP / 1000) * currentDelta;
-
-            // Integral: Sum of all errors helps correct for small errors over time
-            integralSum += currentDelta;
-            I = kI * integralSum;
-
-            // Derivative: React to the rate of error change
-            D = kD * (currentDelta - previousDelta) / pollingRate;
-
-            // Calculate total PID response
-            totalPID = P + I + D;
-
-            // Use totalPID to move motors proportionally
-            mLift.spin(forward, totalPID, percent);
-
-            // Check if the error is small enough to stop
-            if (fabs(currentDelta) < 30)
-            {
-              goalMet++;
-            }
-            // Update the previous error for the next loop
-            previousDelta = currentDelta;
-
-            // Wait for the polling rate before next iteration
-            // changed to nothing
-          }
-          // Stop the motors once goal is met
-          mLift.stop(hold);
-          running = false;
-          definedVar = false; // implement counting feature to avoid having waits in driver control
-        }
-        else if ((Controller1.ButtonL2.pressing()) || (armPos==2 &&running==true))
-        {
-          if (definedVar == false && running == false)
-          {
-            double targetDeg = 332;
-            int goalMet = 0;                      // Flag to track if the goal is met
-            double currentDelta;                  // Error between target and current position
-            double P = 0, I = 0, D = 0, totalPID; // PID terms
-            double pollingRate = 20;              // Polling rate in ms // Target position in degrees
-
-            double previousDelta = targetDeg; // Initialize previous error as target
-            double integralSum = 0;           // Cumulative error for integral term
-
-            // Reset motor encoder value to 0
-            mLift.setPosition(0, degrees);
-
-            definedVar = true;
-            running = true;
-            armPos = 2;
-          }
-
-          if (goalMet <= 1 && running == true && armPos == 2)
-          {
-            // Main PID loop; runs until target is reached
-            // Read motor position (you can average left and right motor values for straight driving)
-            double currentPosition = Rotation.angle(deg);
-
-            // Calculate the current error
-            currentDelta = targetDeg - currentPosition;
-
-            // Proportional: Larger error results in larger response
-            P = (kP / 1000) * currentDelta;
-
-            // Integral: Sum of all errors helps correct for small errors over time
-            integralSum += currentDelta;
-            I = kI * integralSum;
-
-            // Derivative: React to the rate of error change
-            D = kD * (currentDelta - previousDelta) / pollingRate;
-
-            // Calculate total PID response
-            totalPID = P + I + D;
-
-            // Use totalPID to move motors proportionally
-            mLift.spin(forward, totalPID, percent);
-
-            // Check if the error is small enough to stop
-            if (fabs(currentDelta) < 30)
-            {
-              goalMet++;
-            }
-            // Update the previous error for the next loop
-            previousDelta = currentDelta;
-
-            // Wait for the polling rate before next iteration
-            // changed to nothing
-          }
-          // Stop the motors once goal is met
-          mLift.stop(hold);
-          running = false;
-          definedVar = false; // implement counting feature to avoid having waits in driver control
-        }
-        else if ((Controller1.ButtonL.pressing()) || (armPos==3 &&running==true))
-        {
-          if (definedVar == false && running == false)
-          {
-            double targetDeg = 232;
-            int goalMet = 0;                      // Flag to track if the goal is met
-            double currentDelta;                  // Error between target and current position
-            double P = 0, I = 0, D = 0, totalPID; // PID terms
-            double pollingRate = 20;              // Polling rate in ms // Target position in degrees
-
-            double previousDelta = targetDeg; // Initialize previous error as target
-            double integralSum = 0;           // Cumulative error for integral term
-
-            // Reset motor encoder value to 0
-            mLift.setPosition(0, degrees);
-
-            definedVar = true;
-            running = true;
-            armPos = 3;
-          }
-
-          if (goalMet <= 1 && running == true && armPos == 3)
-          {
-            // Main PID loop; runs until target is reached
-            // Read motor position (you can average left and right motor values for straight driving)
-            double currentPosition = Rotation.angle(deg);
-
-            // Calculate the current error
-            currentDelta = targetDeg - currentPosition;
-
-            // Proportional: Larger error results in larger response
-            P = (kP / 1000) * currentDelta;
-
-            // Integral: Sum of all errors helps correct for small errors over time
-            integralSum += currentDelta;
-            I = kI * integralSum;
-
-            // Derivative: React to the rate of error change
-            D = kD * (currentDelta - previousDelta) / pollingRate;
-
-            // Calculate total PID response
-            totalPID = P + I + D;
-
-            // Use totalPID to move motors proportionally
-            mLift.spin(forward, totalPID, percent);
-
-            // Check if the error is small enough to stop
-            if (fabs(currentDelta) < 30)
-            {
-              goalMet++;
-            }
-            // Update the previous error for the next loop
-            previousDelta = currentDelta;
-
-            // Wait for the polling rate before next iteration
-            // changed to nothing
-          }
-          // Stop the motors once goal is met
-          mLift.stop(hold);
-          running = false;
-          definedVar = false; // implement counting feature to avoid having waits in driver control
-        }
-        else
-        {
-          mLift.stop(hold);
-        }*/
-    
 
     /*if (Controller1.ButtonDown.pressing())
     {
@@ -2057,7 +1877,7 @@ void usercontrol(void)
     // Insert user code here. This is where you use the joystick values to
     // update your motors, etc.
     // ........................................................................
-
+    Event.broadcast();
     vex ::wait(20, msec);
     // Brain.Screen.clearLine(); // Sleep the task for a short amount of time to
     //  prevent wasted resources.
