@@ -28,6 +28,8 @@
 
 #include "vex.h"
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 using namespace vex;
 competition Competition;
 brain Brain;
@@ -63,7 +65,7 @@ limit limitS = limit(Brain.ThreeWirePort.E);
 const double WHEEL_RADIUS = 1.379;
 
 // distance between right wheel and tracking center [inches?]
-rDist = 5;
+const double rDist = 5;
 
 // initial angle robot starts at (specified in odomSelector) [radians]
 double initTheta = 0;
@@ -109,14 +111,14 @@ void odometry() {
     odomLoopActive = true;
 
     // Gets the angle of the right wheel [radians]
-    currentR = mMidRight.position(deg) * Math.pi / 180;
+    currentR = mMidRight.position(deg) * M_PI / 180;
     // calculates change in wheel position since last loop [inches]
     deltaR = (currentR - prevR) * WHEEL_RADIUS;
     // Updates positions for next loop
     prevR = currentR;
 
     // Gets the orientation of robot [radians]
-    theta = Inertial.heading() * math.pi / 180;
+    theta = Inertial.heading() * M_PI / 180;
     // Wraps theta around domain of [0,2pi)
     if(theta < 0 || theta > 2 * M_PI){
       theta = fmod(theta,2*M_PI);
@@ -170,22 +172,44 @@ void odomKillSwitch() {
   odomRunning = !odomRunning;
 }
 
-void odomDataCollection() {
-  printf("%s | %s | %s | %s | %s \n",
-    center("theta",14).c_str(), center("deltaTheta",14).c_str(), center("avgTheta",14).c_str(),
-    center("posX",14).c_str(), center("posY",14).c_str());
-  
-  printf("%s \n", std::string(15*8 + 2*8, '-').c_str());
-
-  while(odomRunning) {
-    printf("%s | %s | %s | %s | %s \n",
-      prd(radToDeg(theta),2,14).c_str(),
-      prd(deltaTheta,2,14).c_str(), prd(avgTheta,2,14).c_str(), prd(posX,2,14).c_str(),
-      prd(posY,2,14).c_str());
-
-    wait(500, msec);
-  }
+// Utility function to pad strings to a specified width (right-aligned)
+std::string padRight(const std::string& str, size_t width) {
+    if (str.length() >= width) return str;
+    return str + std::string(width - str.length(), ' ');
 }
+
+// Function to print formatted values with specific precision
+std::string formatValue(double value, int precision, size_t width) {
+    std::ostringstream oss;
+    oss.precision(precision);
+    oss << std::fixed << value;  // Convert the value to a string with fixed precision
+    return padRight(oss.str(), width);  // Pad to the right to ensure correct width
+}
+
+void odomDataCollection() {
+    // Print header with manual padding (right-aligned)
+    std::cout << padRight("theta", 14) << " | "
+              << padRight("deltaTheta", 14) << " | "
+              << padRight("avgTheta", 14) << " | "
+              << padRight("posX", 14) << " | "
+              << padRight("posY", 14) << std::endl;
+
+    // Print separator line
+    std::cout << std::string(15 * 5 + 4, '-') << std::endl;
+
+    // Print data values in a loop with manual formatting
+    while (odomRunning) {
+        std::cout << formatValue(theta * 180 / M_PI, 2, 14) << " | "
+                  << formatValue(deltaTheta, 2, 14) << " | "
+                  << formatValue(avgTheta, 2, 14) << " | "
+                  << formatValue(posX, 2, 14) << " | "
+                  << formatValue(posY, 2, 14) << std::endl;
+
+        // Wait for 500 milliseconds
+        wait(500, msec);
+    }
+}
+
 
 void printCenter(String input){
   // Screen Size (x,y) = (480, 240)
@@ -1548,6 +1572,8 @@ void adaptive()
 
 void autonomous(void)
 {
+  vex::thread odom(odometry);
+
   // auton = 25;
   // oldDrivePID(1000,100);
   // driveDeg(1000,1000,100);
@@ -1602,6 +1628,8 @@ void autonomous(void)
 /*                                                                           */
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
+
+
 bool clamp = false;
 bool door = false;
 bool upInt = false;
