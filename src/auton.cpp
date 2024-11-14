@@ -302,7 +302,7 @@ void halfAWP(int i)
   wait(500,msec);
   drivePID(-10);
   drivePID(-30);
-  setArm(3);   
+  setArmTop();   
   inert(-145*i);
   drivePID(7);
 }
