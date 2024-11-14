@@ -149,7 +149,7 @@ void odometry() {
     posY += deltaYGlobal;
 
     odomLoopActive = false;
-    wait(10,msec)
+    wait(10,msec);
   }
 }
 
@@ -677,31 +677,6 @@ void tunerDrivePID(double inches, double kP = 110, double kI = 0, double kD = .1
               << timeElapsed << "," << maxPitch << ","
               << motorHeat << std::endl;
   }
-}
-
-void odometry(){
-
-
-  // Initialize starting values
-  double leftPos, rightPos, perpPos;
-  double prevLeftPosition = 0 , prevRightPosition = 0;
-  double deltaLeft, deltaRight;
-  double totalDeltaLeft = 0, totalDeltaRight = 0;
-  double theta = Intertial.heading() * math.pi / 180; // only working with radians in odom
-  double globalX = 0, globalY = 0;
-
-  bool odomRunning = true;
-  while(odomRunning){
-    leftPos = mMidLeft.position();
-    rightPos = mMidRight.position();
-
-
-  }
-
-
-
-
-
 }
 
 /*
