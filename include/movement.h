@@ -14,5 +14,8 @@ void driveInches(double fwdVal, int veloc);
 void driveInchesClamp(double fwdVal, int veloc);
 void tunePID(void);
 void GraphPID(double rangeP, double rangeD, double guessP, double guessD, int sqrtTests);
+void setArmBottom();
+void setArmMid();
+void setArmTop();
 
 #endif // MOVEMENT_H

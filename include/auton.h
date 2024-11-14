@@ -2,11 +2,12 @@
 #define AUTON_H
 
 void skillsAuto();
-void bluerightAuto();
+void blueRightAuto(int i);
+void blueMidAuto(int i);
 void redleftAuto();
 void rightAuto();
 void AWP();
-void halfAWP();
+void halfAWP(int i);
 void adaptive();
 
 #endif // AUTON_H

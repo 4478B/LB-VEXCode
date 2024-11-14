@@ -32,24 +32,25 @@
 #include "auton.h"
 #include "vex.h"
 #include <iostream>
+#include <string>
 using namespace vex;
 
-void printCenter(String input){
+void printCenter(std::string input)
+{
   // Screen Size (x,y) = (480, 240)
-  int width = Brain.Screen.getStringWidth(input);
-  int xOffset = 240 - width/2
+  int width = Brain.Screen.getStringWidth(input.c_str());
+  int xOffset = 240 - width/2;
   if (width <= 480){
     Brain.Screen.clearLine();
-    Brain.Screen.printAt(input, xOffset, 120);
+    Brain.Screen.printAt(xOffset, 120, input.c_str());
   }
 }
 
 int autonSelection = 0;
-const int autonCount = 7;
-void autonSelection()
+int autonCount = 7;
+void autonSelect()
 {
   autonSelection = (autonSelection + 1)%(autonCount + 1); // loops 1 through the auton count
-  Brain.Screen.setfont(FontType.MONO40);
   switch (autonSelection)
   {
   case 0:
@@ -85,7 +86,6 @@ void autonSelection()
     printCenter("blue Mid Auto");
     break;
   }
-  Brain.Screen.setFont(FontType.MONO20);
 }
 
 void pre_auton(void)
@@ -93,12 +93,12 @@ void pre_auton(void)
   sClamp.set(true);
   Inertial.calibrate();
   while(Inertial.isCalibrating()){ // temporarily freezes robot during sensor calibration
-    Brain.Screen.clear()
-    printCenter("Inertial Sensor Calibrating")
-    wait(50, msec)
+    Brain.Screen.clearScreen();
+    printCenter("Inertial Sensor Calibrating");
+    wait(50, msec);
   }
-  Brain.Screen.clear();
-  Brain.Screen.pressed(autonSelection);
+  Brain.Screen.clearScreen();
+  Brain.Screen.pressed(autonSelect);
   
   vex ::wait(4, sec);
 }
@@ -238,10 +238,12 @@ double targetDegInp;
 bool skip = false;
 double prevRot = 0;
 
-event Event;
+event Event = event(setArmBottom);
+event Event2 = event(setArmMid);
+event Event3 = event(setArmTop);
+vex::thread arm();
 void usercontrol(void)
 {
-  thread
   mBackLeft.stop(coast);
   mBackRight.stop(coast);
   mFrontLeft.stop(coast);
@@ -346,32 +348,27 @@ void usercontrol(void)
       vex ::wait(240, msec);
     }
 
-    if (Controller1.ButtonDown.pressing())
-    {
-      sDoinker.set(!sDoinker.value());
-      vex ::wait(240, msec);
-    }
     //cannot call the same pos twice
     if((Controller1.ButtonL1.pressing()||Controller2.ButtonL1.pressing()) && pidRunning==false && armPos!=1){ 
       pidRunning = true; //starts the PID running
       armPos =1; //sets the position of the arm, stores in variable 
       targetDegInpRot = 0;  //rotation sensor value for PID
       targetDegInp = 0; //tune according to motor encoder values
-      Event(setArm(1))
+      Event(setArmBottom);
     }
     else if((Controller1.ButtonL2.pressing()||Controller2.ButtonL2.pressing()) && pidRunning==false  && armPos!=2){//cannot call the same pos twice
       pidRunning = true;
       armPos=2;
       targetDegInpRot = 25; //rotation sensor value
       targetDegInp = 65; //tune according to motor encoder values, could be negative idk
-       Event(setArm(2));
+       Event2(setArmMid);
     }
     else if((Controller1.ButtonLeft.pressing()||Controller2.ButtonLeft.pressing()) && pidRunning==false  && armPos!=3){
       pidRunning = true;
       armPos=3;
       targetDegInpRot = 131.5;
       targetDegInp = 220;
-      Event(setArm(3));
+      Event3(setArmTop);
        //tune according to motor encoder values, could be negative idk
     }
 
@@ -389,7 +386,7 @@ void usercontrol(void)
 */
 
 //THIS IS THE ARM CODE WITHOUT MULTITHREADING
-/*
+
     if(Controller2.ButtonB.pressing()){
       mLift.setPosition(0,deg);
       mLift.stop(hold);
@@ -490,7 +487,7 @@ void usercontrol(void)
     else{
       mLift.stop(hold);
       mLift2.stop(hold);
-    }*/
+    }
 
     //This is the motor encoder version <------------------------------------
     /*
@@ -606,6 +603,8 @@ void usercontrol(void)
     // update your motors, etc.
     // ........................................................................
     Event.broadcast();
+    Event2.broadcast();
+    Event3.broadcast();
     vex ::wait(20, msec);
     // Brain.Screen.clearLine(); // Sleep the task for a short amount of time to
     //  prevent wasted resources.
