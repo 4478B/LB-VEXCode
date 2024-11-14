@@ -19,7 +19,7 @@ double turnSlew(double val)
   return val;
 }
 
-void inert(double target, double kP = 0.499, double kI = 0, double kD = 0.002)
+void inert(double target, double kP, double kI, double kD)
 {
   bool isComplete = false;
   double startTime = Brain.timer(msec), prevTime = startTime, deltaTime, currentTime;
@@ -109,7 +109,7 @@ void driveDeg(int DDegL, int DDegR, int veloc)
   mFrontRight.spinFor(forward, DDegR, degrees, true);
 }
 
-void drivePID(double inches, double kP = 110, double kI = 0, double kD = .15, double goalThreshold = 30)
+void drivePID(double inches, double kP, double kI, double kD, double goalThreshold)
 {
   // Function to control robot movement using PID
   int inGoal = 0;                                            // Tracks robot's time in goal threshold
@@ -199,7 +199,7 @@ void drivePID(double inches, double kP = 110, double kI = 0, double kD = .15, do
   mMidRight.stop();
 }
 
-void tunerDrivePID(double inches, double kP = 110, double kI = 0, double kD = .15, int ID = -1)
+void tunerDrivePID(double inches, double kP, double kI, double kD, int ID)
 {
   // Function to control robot movement using PID
   int goalMet = 0;                                     // Flag to track if the goal is met
@@ -301,7 +301,7 @@ void tunerDrivePID(double inches, double kP = 110, double kI = 0, double kD = .1
 }
 
 void odometry(){
-
+  mBackLeft.setPosition(0, degrees);
 }
 
 void oldDrivePID(double degrs, double veloc)
@@ -362,6 +362,7 @@ void oldDrivePID(double degrs, double veloc)
     mMidRight.stop(hold);*/
   vex ::wait(200, msec);
 }
+
 void drivePIDClamp(double degrs, double veloc)
 {
   double average = 0;
@@ -430,6 +431,7 @@ void drivePIDClamp(double degrs, double veloc)
     mMidLeft.stop(hold);
     mMidRight.stop(hold);*/
 }
+
 void driveInches(double fwdVal, int veloc)
 {
   const double diameter = 2.75;
@@ -443,6 +445,7 @@ void driveInches(double fwdVal, int veloc)
 
   oldDrivePID(fwdInches, veloc);
 }
+
 void driveInchesClamp(double fwdVal, int veloc)
 {
   const double diameter = 2.75;
@@ -730,6 +733,7 @@ void setArmBottom()
   mLift.stop(hold);
   mLift.stop(hold);
 }
+
 void setArmMid()
 {
   int armPos=2;

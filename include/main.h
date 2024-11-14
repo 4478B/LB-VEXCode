@@ -8,25 +8,14 @@
 // Global variables
 extern int auton;
 
-// VEX Phase declarations
-void pre_auton(void);
-void autonomous(void);
-void usercontrol(void);
+// Function to print centered text on the Brain's screen
+void printCenter(std::string input);
 
-// Helper functions
-double turnSlew(double val);
-void inert(double target, int qwerty, double kP = 0.475, double kI = 0, double kD = 0.002);
-void driveDeg(int DDegL, int DDegR, int veloc);
-void drivePID(double inches, double kP = 110, double kI = 0, double kD = .15, double wheelRadius = 1.375);
-void tunerDrivePID(double inches, double kP = 110, double kI = 0, double kD = .15, int ID = -1);
+// Overloaded functions to update the controller screen with PID values
 void updateController(double kP, double kI, double kD, int sel, double mag);
 void updateController(double mag);
 void updateController(double val, double sel, double mag);
-void oldDrivePID(double degrs, double veloc);
-void drivePIDClamp(double degrs, double veloc);
-void driveInches(double fwdVal, int veloc);
-void driveInchesClamp(double fwdVal, int veloc);
-void tunePID(void);
-void GraphPID(double rangeP, double rangeD, double guessP, double guessD, int sqrtTests);
 
+// Thread for arm control
+vex::thread arm();
 #endif // MAIN_H

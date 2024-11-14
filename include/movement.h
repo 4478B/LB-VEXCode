@@ -1,19 +1,31 @@
 #ifndef MOVEMENT_H
 #define MOVEMENT_H
 
-// Helper functions
-double turnSlewStep;
-double turnSlew(double val);
-void inert(double target, double kP = 0.475, double kI = 0, double kD = 0.002);
-void driveDeg(int DDegL, int DDegR, int veloc);
-void drivePID(double inches, double kP = 110, double kI = 0, double kD = .15, double wheelRadius = 1.375);
-void tunerDrivePID(double inches, double kP = 110, double kI = 0, double kD = .15, int ID = -1);
-void oldDrivePID(double degrs, double veloc);
-void drivePIDClamp(double degrs, double veloc);
-void driveInches(double fwdVal, int veloc);
-void driveInchesClamp(double fwdVal, int veloc);
-void tunePID(void);
+// General Utilities
+double turnSlew(double val); 
+void inertClamp(double t);
+
+// PID Driving
+void drivePID(double inches, double kP = 110, double kI = 0, double kD = 0.15, double goalThreshold = 30);
+void tunerDrivePID(double inches, double kP = 110, double kI = 0, double kD = 0.15, int ID = -1);
+void tunePID();
 void GraphPID(double rangeP, double rangeD, double guessP, double guessD, int sqrtTests);
+
+// PID Turning
+void inert(double target, double kP = 0.499, double kI = 0, double kD = 0.002);
+
+// Open-loop Driving
+void driveDeg(int DDegL, int DDegR, int veloc);
+void driveInches(double fwdVal, int veloc);
+void drivePIDClamp(double degs, double veloc);
+void driveInchesClamp(double fwdVal, int veloc);
+void oldDrivePID(double degs, double veloc);
+
+// Odometry
+void odometry();
+
+// Arm Control
+void setArm(int armPos);
 void setArmBottom();
 void setArmMid();
 void setArmTop();
