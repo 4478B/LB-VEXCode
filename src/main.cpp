@@ -2159,7 +2159,7 @@ void usercontrol(void)
       //  prevent wasted resources.
     }
   }
-
+  }
   //
   // Main will set up the competition functions and callbacks.
   //
