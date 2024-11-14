@@ -697,6 +697,7 @@ bool odomRunning = false;
 bool odomLoopActive = false;
 
 void odometry() {
+  setStartingOdomValues();
   odomRunning = true;
 
   while(odomRunning) {  
@@ -747,14 +748,17 @@ void odometry() {
 
 // sets starting values based on auton configs
 void setStartingOdomValues() {
-  switch (autonSelection) {
+  /*switch (autonSelection) {
       case 0:
         // WIP
         posX = 0;
         posY = 0;
         initTheta = 0;
         break;
-  }
+  }*/
+  posX = 0;
+  posY = 0;
+  initTheta = 0;
   theta = initTheta;
   prevTheta = theta;
   avgTheta = theta + (deltaTheta / 2);

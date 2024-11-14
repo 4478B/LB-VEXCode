@@ -54,7 +54,7 @@ void autonSelect()
   switch (autonSelection)
   {
   case 0:
-    Brain.Screen.clearLine();
+    Brain.Screen.clearLine(); 
     printCenter("Right side");
     break;
   case 1:
@@ -98,6 +98,8 @@ void pre_auton(void)
     wait(50, msec);
   }
   Brain.Screen.clearScreen();
+  vex::thread odom(odometry);
+  vex::thread odomData(odomDataCollection);
   Brain.Screen.pressed(autonSelect);
   
   vex ::wait(4, sec);

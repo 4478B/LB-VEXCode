@@ -16,6 +16,6 @@ void updateController(double kP, double kI, double kD, int sel, double mag);
 void updateController(double mag);
 void updateController(double val, double sel, double mag);
 
-// Thread for arm control
-vex::thread arm();
+// Thread for arm control (commented out while testing)
+// vex::thread arm();
 #endif // MAIN_H
