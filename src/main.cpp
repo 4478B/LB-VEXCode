@@ -291,34 +291,25 @@ void usercontrol(void)
     }
 
     if (Controller1.ButtonX.pressing())
-    { // toggle for the macro
-      if (macro == false)
-      {
-        macro = true;
-      }
-      else if (macro == true)
-      {
-        macro = false;
-        count = 0;
-      }
+    {
+      macro = !macro;  // Toggle macro state
+      if (!macro) count = 0;  // Reset count when turning off
       wait(240, msec);
     }
-    if (macro == true)
-    { // uses count variable to time length
-      mIntake.spin(fwd, 100, pct);
-      if (ringCheck.objectDistance(inches) <= 1.5)
-      {
-        count += 1;
+    if (macro) {
+      if (count >= 150) {  // After ~0.5s of reversing
+          macro = false;
+         count = 0;
       }
-      if (count >= 4)
-      { // sees the ring for 80 millseconds, it starts reversing
-        mIntake.spin(reverse, 100, pct);
-        count += 1;
+      else if (count >= 4) {  // After 80ms of ring detection
+          mIntake.spin(reverse, 100, pct);
+          count++;
       }
-      if (count >= 150)
-      { // after another half a second it resets to original value
-        macro = false;
-        count = 0;
+      else {  // Initial forward motion
+        mIntake.spin(fwd, 100, pct);
+          if (ringCheck.objectDistance(inches) <= 1.5) {
+            count++;
+          }
       }
     }
     if (Controller1.ButtonR1.pressing())
@@ -334,18 +325,10 @@ void usercontrol(void)
       mIntake.stop();
     }
 
-    if (Controller1.ButtonB.pressing())
-    {
-      if (clamp == false)
-      {
-        clamp = true;
-      }
-      else if (clamp == true)
-      {
-        clamp = false;
-      }
-      sClamp.set(clamp);
-      vex ::wait(240, msec);
+    if (Controller1.ButtonB.pressing()) {
+    clamp = !clamp;  // Toggle clamp state
+    sClamp.set(clamp);
+    wait(240, msec);
     }
 
     //cannot call the same pos twice
