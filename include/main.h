@@ -6,7 +6,7 @@
 #include "devices.h"
 
 // Global variables
-extern int auton;
+extern int autonSelection;
 
 // Function to print centered text on the Brain's screen
 void printCenter(std::string input);

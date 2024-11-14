@@ -23,11 +23,15 @@ void oldDrivePID(double degs, double veloc);
 
 // Odometry
 void odometry();
+void setStartingOdomValues();
+void odomKillSwitch();
+
 
 // Arm Control
 void setArm(int armPos);
 void setArmBottom();
 void setArmMid();
 void setArmTop();
+void odomDataCollection();
 
 #endif // MOVEMENT_H
