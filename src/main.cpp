@@ -52,7 +52,6 @@ rotation Rotation = rotation(PORT2);
 
 // Digital-out device declarations
 digital_out sClamp = digital_out(Brain.ThreeWirePort.B);
-digital_out sDoinker = digital_out(Brain.ThreeWirePort.C);
 digital_out sDoor = digital_out(Brain.ThreeWirePort.F);
 digital_out sintake = digital_out(Brain.ThreeWirePort.D);
 
@@ -1860,11 +1859,6 @@ void usercontrol(void)
       vex ::wait(240, msec);
     }
 
-    if (Controller1.ButtonDown.pressing())
-    {
-      sDoinker.set(!sDoinker.value());
-      vex ::wait(240, msec);
-    }
     //cannot call the same pos twice
     if((Controller1.ButtonL1.pressing()||Controller2.ButtonL1.pressing()) && pidRunning==false && armPos!=1){ 
       pidRunning = true; //starts the PID running
