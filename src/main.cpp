@@ -590,18 +590,6 @@ void usercontrol(void)
       vex ::wait(240, msec);
     }
 
-    /*Controller1.Screen.clearLine();
-    Controller1.Screen.print(Inertial.rotation());
-    Controller1.Screen.print(" , ");
-    Controller1.Screen.print(mBackRight.position(degrees));*/
-    // This is the main execution loop for the user control program.
-    // Each time through the loop your program should update motor + servo
-    // values based on feedback from the joysticks.
-
-    // ........................................................................
-    // Insert user code here. This is where you use the joystick values to
-    // update your motors, etc.
-    // ........................................................................
     Event.broadcast();
     Event2.broadcast();
     Event3.broadcast();
