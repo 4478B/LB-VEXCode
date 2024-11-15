@@ -308,6 +308,6 @@ void halfAWP(int i)
 }
 void adaptive()
 {
-  drivePID(10);
+  drivePID(-50);
   
 }

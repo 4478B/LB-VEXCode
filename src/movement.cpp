@@ -786,8 +786,8 @@ void odomDataCollection() {
     while (odomRunning) {
         // Convert theta to degrees and print all values
         std::cout << std::setw(14) << (theta * 180 / M_PI) << " | "
-                  << std::setw(14) << deltaTheta << " | "
-                  << std::setw(14) << avgTheta << " | "
+                  << std::setw(14) << (deltaTheta * 180 / M_PI) << " | "
+                  << std::setw(14) << (avgTheta * 180 / M_PI) << " | "
                   << std::setw(14) << posX << " | "
                   << std::setw(14) << posY << std::endl;
                   

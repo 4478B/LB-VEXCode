@@ -46,7 +46,7 @@ void printCenter(std::string input)
   }
 }
 
-int autonSelection = 0;
+int autonSelection = 5;
 int autonCount = 7;
 void autonSelect()
 {
@@ -98,8 +98,8 @@ void pre_auton(void)
     wait(50, msec);
   }
   Brain.Screen.clearScreen();
-  vex::thread odom(odometry);
-  vex::thread odomData(odomDataCollection);
+  //vex::thread odom(odometry);
+  //vex::thread odomData(odomDataCollection);
   Brain.Screen.pressed(autonSelect);
   
   vex ::wait(4, sec);
@@ -177,7 +177,7 @@ void autonomous(void)
     halfAWP(1);
     break;
   case 6:
-    blueMidAuto(-1);
+    adaptive();
     break;
   case 7:
     blueMidAuto(1);
@@ -286,11 +286,11 @@ void usercontrol(void)
     mMidLeft.spin(forward, left, pct);
     mMidRight.spin(forward, right, pct);
 
-    if (Controller1.ButtonY.pressing())
+    /*if (Controller1.ButtonY.pressing())
     { // enables PID Tuning mode *** DISABLE DURING COMPS
       tunePID();
       std::cout << "enabling tunePID." << std::endl;
-    }
+    }*/
 
     if (Controller1.ButtonX.pressing())
     {
@@ -370,8 +370,8 @@ void usercontrol(void)
     }
 */
 
-//THIS IS THE ARM CODE WITHOUT MULTITHREADING
 
+// this is to reset the arms' encoder if it is offset
     if(Controller2.ButtonB.pressing()){
       mLift.setPosition(0,deg);
       mLift.stop(hold);
@@ -384,8 +384,10 @@ void usercontrol(void)
       mLift.setPosition(220,deg);
       mLift.stop(hold);
     }
-
+//THIS IS THE ARM CODE WITHOUT MULTITHREADING
     //This code uses the rotation sensor to turn the motor
+
+  
     if(pidRunning==true){//the code runs completely because of this variable
       if(definedVar==false){// The variable is what makes it so the values are all only defined once
         targetDeg = targetDegInpRot ;
@@ -474,92 +476,7 @@ void usercontrol(void)
       mLift2.stop(hold);
     }
 
-    //This is the motor encoder version <------------------------------------
-    /*
-    if(pidRunning==true){
-       if(definedVar==false){
-        
-        targetDeg = targetDegInp ;
-        kP = 1000;
-        kI = 0;
-        kD = .5;
-        goalMet = 0;                      // Flag to track if the goal is met
-        currentDelta;                  // Error between target and current position
-        P = 0, I = 0, D = 0 ;// PID terms            // Polling rate in ms // Target position in degrees
-
-        previousDelta = targetDegInp; // Initialize previous error as target
-        integralSum = 0;  
-
-        definedVar=true;
-      }
-       if (goalMet <= 1 && definedVar==true)
-        {
-          // Main PID loop; runs until target is reached
-          // Read motor position (you can average left and right motor values for straight driving)
-          double currentPosition = mLift.position(deg);
-
-          double error = targetDeg - currentPosition;
-          // Calculate the current error
-          currentDelta = error;
-
-          // Proportional: Larger error results in larger response
-          P = (kP / 1000) * currentDelta;
-
-          // Integral: Sum of all errors helps correct for small errors over time
-          integralSum += currentDelta;
-          I = kI * integralSum;
-
-          // Derivative: React to the rate of error change
-          D = kD * (currentDelta - previousDelta) / 20;
-
-          // Calculate total PID response
-          totalPID = P + I + D;
-
-          // Use totalPID to move motors proportionally
-          mLift.spin(forward, totalPID, percent);
-
-          // Check if the error is small enough to stop
-          if (fabs(currentDelta) < 3)
-          {
-            goalMet++;
-            pidRunning=false;
-            definedVar=false;
-          }
-          // Update the previous error for the next loop
-          previousDelta = currentDelta;
-
-          // Wait for the polling rate before next iteration
-          // changed to nothing
-        }
-    }
-    else if(Controller1.ButtonDown.pressing()){
-      mLift.spin(reverse,70,pct);
-      mLift.setPosition(0,deg);
-      armPos = 1;
-    }
-    else if(Controller2.ButtonR1.pressing()){
-      mLift.spin(fwd,15,pct);
-    }
-    else if(Controller2.ButtonR2.pressing()){
-      mLift.spin(reverse,15,pct);
-    }
-    else{
-      mLift.stop(hold);
-    }*/
-
-    /*if (Controller1.ButtonDown.pressing())
-    {
-      if (door == false)
-      {
-        door = true;
-      }
-      else if (door == true)
-      {
-        door = false;
-      }
-      sDoor.set(door);
-      vex ::wait(240, msec);
-    }*/
+    
 
     if (Controller1.ButtonUp.pressing())
     {
@@ -575,9 +492,18 @@ void usercontrol(void)
       vex ::wait(240, msec);
     }
 
-    Event.broadcast();
-    Event2.broadcast();
-    Event3.broadcast();
+/*
+    if(armPos==1){
+
+         Event.broadcast();
+    }
+    else if(armPos==2){
+      Event2.broadcast();
+    }
+    else if(armPos==3){
+      Event3.broadcast();
+    }*/
+    
     vex ::wait(20, msec);
     // Brain.Screen.clearLine(); // Sleep the task for a short amount of time to
     //  prevent wasted resources.
