@@ -46,7 +46,7 @@ void printCenter(std::string input)
   }
 }
 
-int autonSelection = 3;
+int autonSelection = 4;
 int autonCount = 7;
 void autonSelect()
 {
@@ -97,6 +97,7 @@ void pre_auton(void)
     printCenter("Inertial Sensor Calibrating");
     wait(50, msec);
   }
+  Controller1.rumble("-");
   Brain.Screen.clearScreen();
   //vex::thread odom(odometry);
   //vex::thread odomData(odomDataCollection);

@@ -233,43 +233,19 @@ void AWP()
   mIntake.stop();
   inert(0);
   driveInchesClamp(-17,30);
-  drivePID(60);
-  mIntake.spin(fwd,100,pct);
-  wait(300, msec);
-  mIntake.spin(reverse,100,pct);
-  wait(300, msec);
-  inert(135);
-  drivePID(-10);
+  mIntake.spin(fwd, 100, pct);
+  drivePID(9);
   mIntake.stop();
+  inert(95);
   sClamp.set(true);
-  drivePID(10);
 
 
-  inert(105);
-  drivePID(83);
-  inert(90);
-  drivePID(17);
-  inert(315);
-  driveInchesClamp(-27,50);
+
+  drivePID(60);
+  inert(225);
+  driveInchesClamp(6,50);
   
-
-
-
-
-
-  inert(100);
-  drivePID(26);
-  mIntake.spin(fwd,100,pct);
-  wait(500,msec);
-  mIntake.stop();
-
-  inert(215);
-  setArmTop();
-  driveInches(40,30);
-  
-
-
-
+ 
 
   /* THIS OLD AWP CODE WAS REPLACED BEFORE DANIEL HAND COMP
   // this auto is intended to score 5 rings in one goal and score one on a side stake
