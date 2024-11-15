@@ -41,12 +41,12 @@ void printCenter(std::string input)
   int width = Brain.Screen.getStringWidth(input.c_str());
   int xOffset = 240 - width/2;
   if (width <= 480){
-    Brain.Screen.clearLine();
+    Brain.Screen.clearScreen();
     Brain.Screen.printAt(xOffset, 120, input.c_str());
   }
 }
 
-int autonSelection = 5;
+int autonSelection = 3;
 int autonCount = 7;
 void autonSelect()
 {
@@ -79,7 +79,7 @@ void autonSelect()
     break;
   case 6:
     Brain.Screen.clearLine();
-    printCenter("adaptive");
+    printCenter("blue Left Auto");
     break;
   case 7:
     Brain.Screen.clearLine();
@@ -159,7 +159,7 @@ void autonomous(void)
   switch (autonSelection)
   {
   case 0:
-    rightAuto();
+    rightAuto(1);
     break;
   case 1:
     halfAWP(-1); // redLeftAuto is blueRightAuto but inversed
@@ -177,7 +177,7 @@ void autonomous(void)
     halfAWP(1);
     break;
   case 6:
-    adaptive();
+    rightAuto(-1); // blue left is inverse of rightAuto
     break;
   case 7:
     blueMidAuto(1);

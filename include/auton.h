@@ -5,7 +5,7 @@ void skillsAuto();
 void blueRightAuto(int i);
 void blueMidAuto(int i);
 void redleftAuto();
-void rightAuto();
+void rightAuto(int i);
 void AWP();
 void halfAWP(int i);
 void adaptive();

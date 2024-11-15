@@ -183,20 +183,74 @@ void redleftAuto()
   mIntake.spin(fwd, 100, pct);
   drivePID(-20);
 }
-void rightAuto()
+void rightAuto(int i) // inverse is blue left
 {
-  sDoor.set(true);
-  // Grab First Ring
-  mIntake.spin(forward, 100, pct);
-  drivePID(50); // pick up ring
-  wait(300, msec);
+  driveInchesClamp(-28,50);
+  mIntake.spin(fwd,100,pct);
+  wait(400, msec);
+  inert(-90*i);
+  drivePID(-5);
+  sClamp.set(true);
+  drivePID(35);
+  wait(300,msec);
   mIntake.stop();
-  wait(100, msec);
-  inert(160);
-  driveInchesClamp(-24, 80); // grab goal
+  inert(0*i);
+  driveInchesClamp(-17,30);
+  drivePID(24);
+  mIntake.spin(fwd,100,pct);
+  wait(300, msec);
+  inert(100*i);
+
+  setArmTop();
+  driveInches(60,40);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 void AWP()
-{
+{ // starts out the same as rightAuto but then goes full field
+  driveInchesClamp(-28,50);
+  mIntake.spin(fwd,100,pct);
+  wait(400, msec);
+  inert(-90);
+  drivePID(-5);
+  sClamp.set(true);
+  drivePID(35);
+  wait(300,msec);
+  mIntake.stop();
+  inert(0);
+  driveInchesClamp(-17,30);
+  drivePID(60);
+  mIntake.spin(fwd,100,pct);
+  wait(300, msec);
+  mIntake.stop();
+  inert(135);
+  drivePID(-10);
+  sClamp.set(true);
+  drivePID(10);
+  inert(90);
+  drivePID(70);
+  inert(315);
+  driveInchesClamp(34,50);
+
+
+
+
+
+  /* THIS OLD AWP CODE WAS REPLACED BEFORE DANIEL HAND COMP
   // this auto is intended to score 5 rings in one goal and score one on a side stake
   // Grab Goal
   drivePIDClamp(-1250, 80);
@@ -230,7 +284,7 @@ void AWP()
   inert(180);
   drivePID(-7);
   mIntake.spin(fwd,100,pct);//puts ring on alliance stake
-  /*
+  
   sDoor.set(true);
   // Grab First Ring
   mIntake.spin(forward, 100, pct);
