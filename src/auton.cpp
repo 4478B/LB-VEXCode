@@ -228,6 +228,7 @@ void AWP()
   inert(-90);
   drivePID(-5);
   sClamp.set(true);
+  wait(50,msec);
   drivePID(34);
   wait(300,msec);
   mIntake.stop();
@@ -235,15 +236,23 @@ void AWP()
   driveInchesClamp(-17,30);
   mIntake.spin(fwd, 100, pct);
   drivePID(9);
+  wait(300,msec);
+  inert(94);
   mIntake.stop();
-  inert(95);
   sClamp.set(true);
 
 
 
-  drivePID(60);
+
+
+
+
+
+
+
+  drivePID(75);
   inert(225);
-  driveInchesClamp(6,50);
+  driveInchesClamp(-20,50);
   
  
 
