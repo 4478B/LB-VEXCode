@@ -133,7 +133,7 @@ void redleftAuto()
   // Turn on intake
   mIntake.spin(forward, 100, pct);
   // Turn towards mid ring stack
-  inert(140-34);
+  inert(120);
 
   Inertial.setHeading(140,deg);
   // Pick up bottom ring
@@ -346,11 +346,11 @@ void AWP()
   drivePID(39);
   */
 }
-void halfAWP(int i)
+void halfAWP(int i) // this is daniel hand redleft and blueright
 {
   drivePID(-27); 
   drivePIDClamp(-300, 30);
-  inert(-104*i);
+  inert(-108*i);
   wait(500, msec);
   mIntake.spin(forward, 100, pct);
   drivePID(36);
@@ -358,9 +358,15 @@ void halfAWP(int i)
   drivePID(-27);
   wait(500,msec);
   inert(-55*i);
-  drivePID(22);
+  drivePID(25);//+3
   wait(500,msec);
-  drivePID(-10);
+
+  inert(-145*i);
+  drivePID(26);
+  drivePID(-26);
+  inert(-55*i);
+
+  drivePID(-13);//-3
   drivePID(-30);
   setArmTop();   
   inert(-145*i);
