@@ -241,10 +241,10 @@ double targetDegInp;
 bool skip = false;
 double prevRot = 0;
 
-event Event = event(setArmBottom);
+/*event Event = event(setArmBottom);
 event Event2 = event(setArmMid);
 event Event3 = event(setArmTop);
-vex::thread arm();
+vex::thread arm();*/
 void usercontrol(void)
 {
   mBackLeft.stop(coast);
@@ -340,21 +340,21 @@ void usercontrol(void)
       armPos =1; //sets the position of the arm, stores in variable 
       targetDegInpRot = 0;  //rotation sensor value for PID
       targetDegInp = 0; //tune according to motor encoder values
-      Event(setArmBottom);
+      //Event(setArmBottom);
     }
     else if((Controller1.ButtonL2.pressing()||Controller2.ButtonL2.pressing()) && pidRunning==false  && armPos!=2){//cannot call the same pos twice
       pidRunning = true;
       armPos=2;
       targetDegInpRot = 25; //rotation sensor value
       targetDegInp = 65; //tune according to motor encoder values, could be negative idk
-       Event2(setArmMid);
+      //Event2(setArmMid);
     }
     else if((Controller1.ButtonLeft.pressing()||Controller2.ButtonLeft.pressing()) && pidRunning==false  && armPos!=3){
       pidRunning = true;
       armPos=3;
       targetDegInpRot = 131.5;
       targetDegInp = 220;
-      Event3(setArmTop);
+      //Event3(setArmTop);
        //tune according to motor encoder values, could be negative idk
     }
 
