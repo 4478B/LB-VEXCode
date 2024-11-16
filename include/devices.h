@@ -25,6 +25,11 @@ extern distance ringCheck;
 extern inertial Inertial;
 extern rotation Rotation;
 
+// motor group declarations
+// extern motor_group leftMotors; // = motor_group(mBackLeft, mMidLeft, mFrontLeft); // group of all left side drive train motors
+// extern motor_group rightMotors; // = motor_group(mBackRight, mMidRight, mFrontRight); // group of all right side drive train motors
+// extern motor_group armMotors;
+
 // Digital-out device declarations
 extern digital_out sClamp;
 extern digital_out sDoor;
