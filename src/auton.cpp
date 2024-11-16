@@ -363,6 +363,7 @@ void halfAWP(int i) // this is daniel hand redleft and blueright
 
   inert(-145*i);
   drivePID(26);
+  wait(500,msec);
   drivePID(-26);
   inert(-55*i);
 
