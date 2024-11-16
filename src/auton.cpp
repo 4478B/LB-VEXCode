@@ -350,23 +350,29 @@ void halfAWP(int i) // this is daniel hand redleft and blueright
 {
   drivePID(-27); 
   drivePIDClamp(-300, 30);
+  wait(500,msec);
+  mIntake.spin(forward, 100, pct);
+  /*
   inert(-108*i);
   wait(500, msec);
-  mIntake.spin(forward, 100, pct);
+  
   drivePID(36);
   wait(500, msec); 
   drivePID(-27);
   wait(500,msec);
+  */
   inert(-55*i);
-  drivePID(25);//+3
+  drivePID(27);//+3; nvm
   wait(500,msec);
-
+  drivePID(-4);
+  
   inert(-145*i);
-  drivePID(26);
-  drivePID(-26);
+  drivePID(20);
+  wait(500,msec);
+  drivePID(-20);
   inert(-55*i);
 
-  drivePID(-13);//-3
+  drivePID(-11);//-3; nvm
   drivePID(-30);
   setArmTop();   
   inert(-145*i);
