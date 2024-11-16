@@ -1,39 +1,77 @@
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
-/*    Module:       main.cpp                                                  */
-/*    Author:       VEX                                                       */
-/*    Created:      Thu Sep 26 2019                                           */
-/*    Description:  Competition Template                                      */
+/*    Module:       auton.cpp                                                 */
+/*    Author:       4478B                                                     */
+/*    Created:      Sat Nov 16 2024                                           */
+/*    Description:  auton selector and auton routes                           */
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
-
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// mBackRight           motor         20
-// mBackLeft            motor         9
-// mFrontRight          motor         1
-// mFrontLeft           motor         2
-// Controller1          controller
-// mIntake              motor         3
-// mPuncher             motor         6
-// Inertial             inertial      17
-// sWing                digital_out   G
-// shotBlock            digital_out   F
-// mMidLeft             motor         14
-// mMidRight            motor         5
-// CataStop             limit         A
-// FrontWings           digital_out   B
-// ---- END VEXCODE CONFIGURED DEVICES ----
-
 #include "auton.h"
 #include "devices.h"
 #include "movement.h"
 #include "vex.h"
+#include "main.h"
 #include <iostream>
 using namespace vex;
 
-void skillsAuto()
+/*
+ * Framework for the autonomous selector.
+ * Add/remove routines by editing the "routines" array below.
+ */
+
+// Define the structure type before the class
+struct AutonRoutine {
+    const char* displayName;
+    std::function<void(int)> routine;
+    int multiplier;
+};
+
+class AutonSelector {
+private:
+    static const AutonRoutine routines[];  // Declare array
+    int currentSelection = 5;  // Displayed as Route 5 (AWP)
+    const int routineCount = 8;  // Total number of routines
+
+public:
+    void nextSelection() {
+        currentSelection = (currentSelection % routineCount) + 1;  // Loop 1 to routineCount
+        displayCurrentSelection();
+    }
+
+    void displayCurrentSelection() {
+        Brain.Screen.clearLine();
+        printCenter(routines[currentSelection - 1].displayName);  // Offset by -1 for array access
+    }
+
+    void runSelectedAuton() {
+        const AutonRoutine& selected = routines[currentSelection - 1];  // Offset by -1 for array access
+        selected.routine(selected.multiplier);
+    }
+
+    int getCurrentSelection() const {
+        return currentSelection;  // Returns 1-based route number
+    }
+};
+
+// Define the static array outside the class
+const AutonRoutine AutonSelector::routines[] = {
+    {"Right side", rightAuto, 1},      // Route 1
+    {"Red Left Auto", halfAWP, -1},    // Route 2
+    {"Blue Right Auto", blueRightAuto, 1}, // Route 3
+    {"Skills", skillsAuto, 1},         // Route 4
+    {"AWP", AWP, 1},                   // Route 5
+    {"Half AWP", halfAWP, 1},          // Route 6
+    {"Blue Left Auto", rightAuto, -1}, // Route 7
+    {"Blue Mid Auto", blueMidAuto, 1}  // Route 8
+};
+
+// Declare global instance
+AutonSelector autonSelector;
+
+//=============================================================================
+
+/* Autonomous routines */
+void skillsAuto(int i)
 {
   drivePIDClamp(-200, 40);
   mIntake.spin(fwd, 100, pct);
@@ -127,7 +165,7 @@ void blueMidAuto(int i)
   mIntake.spin(fwd, 100,pct);
   drivePID(30);
 }
-void redleftAuto()
+void redleftAuto(int i)
 {
   // this auto is intended to score 5 rings
   // in one goal and score one on a side stake
@@ -223,7 +261,7 @@ void rightAuto(int i) // inverse is blue left
 
 
 }
-void AWP()
+void AWP(int i)
 { // starts out the same as rightAuto but then goes full field
   driveInchesClamp(-28,50);
   mIntake.spin(fwd,100,pct);
@@ -381,7 +419,7 @@ void halfAWP(int i) // this is daniel hand redleft and blueright
   inert(-145*i);
   drivePID(7);
 }
-void adaptive()
+void adaptive(int i)
 {
   drivePID(-50);
   

@@ -92,17 +92,22 @@ void pre_auton(void)
 {
   sClamp.set(true);
   Inertial.calibrate();
-  while(Inertial.isCalibrating()){ // temporarily freezes robot during sensor calibration
+  while(Inertial.isCalibrating()){ // pauses while calibrating IMU
     Brain.Screen.clearScreen();
     printCenter("Inertial Sensor Calibrating");
     wait(50, msec);
   }
-  Controller1.rumble("-");
+  Controller1.rumble("-"); // rumble indicates finished calibration
   Brain.Screen.clearScreen();
-  //vex::thread odom(odometry);
+
+  //vex::thread odom(odometry); // after calibrated, can start odometry
   //vex::thread odomData(odomDataCollection);
-  Brain.Screen.pressed(autonSelect);
-  
+
+  autonSelector.displayCurrentSelection(); // allows user to rotate through autons
+    Brain.Screen.pressed([]() {
+        autonSelector.nextSelection();
+    });
+    
   vex ::wait(4, sec);
 }
 
@@ -151,54 +156,26 @@ void updateController(double val, double sel, double mag)
 
 void autonomous(void)
 {
-  switch (autonSelection)
-  {
-  case 0:
-    rightAuto(1);
-    break;
-  case 1:
-    halfAWP(-1); // redLeftAuto is blueRightAuto but inversed
-    break;
-  case 2:
-    blueRightAuto(1);
-    break;
-  case 3:
-    skillsAuto();
-    break;
-  case 4:
-    AWP();
-    break;
-  case 5:
-    halfAWP(1);
-    break;
-  case 6:
-    rightAuto(-1); // blue left is inverse of rightAuto
-    break;
-  case 7:
-    blueMidAuto(1);
-    break;
-  }
-  // inert(90);
+  // Calibrates motor encoders to reduce drift
+  mBackLeft.setPosition(0,deg);
+  mBackRight.setPosition(0,deg);
+  mFrontLeft.setPosition(0,deg);
+  mFrontRight.setPosition(0,deg);
+  mMidLeft.setPosition(0,deg);
+  mMidRight.setPosition(0,deg);
+
+  // Performs selected autonomous route
+  autonSelector.runSelectedAuton();
+  
+  // Stops motors to prevent crossing field
   mBackLeft.stop();
   mBackRight.stop();
   mFrontLeft.stop();
   mFrontRight.stop();
   mMidLeft.stop();
   mMidRight.stop();
-  // ..........................................................................
-  // Insert autonomous user code here.
-  // ..........................................................................
 }
 
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*                              User Control Task                            */
-/*                                                                           */
-/*  This task is used to control your robot during the user control phase of */
-/*  a VEX Competition.                                                       */
-/*                                                                           */
-/*  You must modify the code to add your own robot specific commands here.   */
-/*---------------------------------------------------------------------------*/
 bool clamp = false;
 bool door = false;
 bool upInt = false;
