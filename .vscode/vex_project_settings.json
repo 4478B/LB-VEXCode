@@ -6,7 +6,11 @@
 	"project": {
 		"name": "2024",
 		"description": "",
+<<<<<<< HEAD
 		"creationDate": "11/14/2024, 7:35:42 AM",
+=======
+		"creationDate": "11/13/2024, 3:05:48 PM",
+>>>>>>> 434b97360ec69b6518a4aec4c66e88bdc96feef0
 		"platform": "V5",
 		"language": "cpp",
 		"slot": 1,

@@ -254,7 +254,7 @@ void usercontrol(void)
   mMidLeft.stop(coast);
   mMidRight.stop(coast);
   Rotation.resetPosition();
-  mLift.setPosition(0,deg);
+  mLift.setPosition(0, deg);
   // User control code here, inside the loop
   while (1)
   {
@@ -405,28 +405,100 @@ void usercontrol(void)
 
         definedVar=true;
       }
-       if (goalMet <= 1 && definedVar==true)
+      else if ((Controller1.ButtonL2.pressing() || Controller2.ButtonL2.pressing()) && pidRunning == false && armPos != 2)
+      { // cannot call the same pos twice
+        pidRunning = true;
+        armPos = 2;
+        targetDegInpRot = 25; // rotation sensor value
+        targetDegInp = 65;    // tune according to motor encoder values, could be negative idk
+        Event2(setArmMid);
+      }
+      else if ((Controller1.ButtonLeft.pressing() || Controller2.ButtonLeft.pressing()) && pidRunning == false && armPos != 3)
+      {
+        pidRunning = true;
+        armPos = 3;
+        targetDegInpRot = 131.5;
+        targetDegInp = 220;
+        Event3(setArmTop);
+        // tune according to motor encoder values, could be negative idk
+      }
+
+      /*
+          if(Controller2.ButtonR1.pressing()){
+            mLift.spin(fwd,70,pct);
+          }
+          else if(Controller2.ButtonR2.pressing()){
+            mLift.spin(reverse,70,pct);
+          }
+          else{
+            mLift.stop(hold);
+          }
+      */
+
+      // THIS IS THE ARM CODE WITHOUT MULTITHREADING
+
+      if (Controller2.ButtonB.pressing())
+      {
+        mLift.setPosition(0, deg);
+        mLift.stop(hold);
+      }
+      else if (Controller2.ButtonA.pressing())
+      {
+        mLift.setPosition(65, deg);
+        mLift.stop(hold);
+      }
+      else if (Controller2.ButtonX.pressing())
+      {
+        mLift.setPosition(220, deg);
+        mLift.stop(hold);
+      }
+
+      // This code uses the rotation sensor to turn the motor
+      if (pidRunning == true)
+      { // the code runs completely because of this variable
+        if (definedVar == false)
+        { // The variable is what makes it so the values are all only defined once
+          targetDeg = targetDegInpRot;
+          kP = 1500;
+          kI = 0;
+          kD = 0.01;
+          goalMet = 0;         // Flag to track if the goal is met
+          currentDelta;        // Error between target and current position
+          P = 0, I = 0, D = 0; // PID terms            // Polling rate in ms // Target position in degrees
+          prevRot = Rotation.angle(deg);
+
+          previousDelta = targetDeg; // Initialize previous error as target
+          integralSum = 0;
+
+          definedVar = true;
+        }
+        if (goalMet <= 1 && definedVar == true)
         {
           // Main PID loop; runs until target is reached
           // Read motor position (you can average left and right motor values for straight driving)
           double currentPosition = Rotation.angle(deg);
           double error = targetDeg - currentPosition;
 
-          if(error>180){
-            error-=360;
+          if (error > 180)
+          {
+            error -= 360;
           }
-          else if(error<-180){
-            error+=360;
+          else if (error < -180)
+          {
+            error += 360;
           }
 
           // Calculate the current error
           currentDelta = error;
 
-          if(armCount%15==0 && armCount>=50){
-            if(fabs(prevRot-currentPosition)<30){
-              //skip=true; The arm is working fine without this, but can add back if needed
+          if (armCount % 15 == 0 && armCount >= 50)
+          {
+            if (fabs(prevRot - currentPosition) < 30)
+            {
+              // skip=true; The arm is working fine without this, but can add back if needed
             }
-            else{
+            else
+            {
               prevRot = currentPosition;
             }
           }
@@ -438,24 +510,24 @@ void usercontrol(void)
           I = kI * integralSum;
 
           // Derivative: React to the rate of error change
-          D = kD * (currentDelta - previousDelta) / 20;//
+          D = kD * (currentDelta - previousDelta) / 20; //
 
           // Calculate total PID response
           totalPID = P + I + D;
 
           // Use totalPID to move motors proportionally
-          mLift.spin(forward, totalPID, percent); //THIS MIGHT NEED TO BE REVERSED
+          mLift.spin(forward, totalPID, percent); // THIS MIGHT NEED TO BE REVERSED
           mLift2.spin(forward, totalPID, percent);
           // Check if the error is small enough to stop
-          if (fabs(currentDelta) < 2 || skip==true)
+          if (fabs(currentDelta) < 2 || skip == true)
           {
             goalMet++;
-            pidRunning=false;
-            definedVar=false;
+            pidRunning = false;
+            definedVar = false;
           }
           // Update the previous error for the next loop
           previousDelta = currentDelta;
-          armCount+=1;
+          armCount += 1;
           // Wait for the polling rate before next iteration
           // changed to nothing
         }
@@ -479,18 +551,97 @@ void usercontrol(void)
 
     
 
-    if (Controller1.ButtonUp.pressing())
-    {
-      if (upInt == false)
-      {
-        upInt = true;
+            // Proportional: Larger error results in larger response
+            P = (kP / 1000) * currentDelta;
+
+            // Integral: Sum of all errors helps correct for small errors over time
+            integralSum += currentDelta;
+            I = kI * integralSum;
+
+            // Derivative: React to the rate of error change
+            D = kD * (currentDelta - previousDelta) / 20;
+
+            // Calculate total PID response
+            totalPID = P + I + D;
+
+            // Use totalPID to move motors proportionally
+            mLift.spin(forward, totalPID, percent);
+
+            // Check if the error is small enough to stop
+            if (fabs(currentDelta) < 3)
+            {
+              goalMet++;
+              pidRunning=false;
+              definedVar=false;
+            }
+            // Update the previous error for the next loop
+            previousDelta = currentDelta;
+
+            // Wait for the polling rate before next iteration
+            // changed to nothing
+          }
       }
-      else if (upInt == true)
-      {
-        upInt = false;
+      else if(Controller1.ButtonDown.pressing()){
+        mLift.spin(reverse,70,pct);
+        mLift.setPosition(0,deg);
+        armPos = 1;
       }
-      sintake.set(upInt);
-      vex ::wait(240, msec);
+      else if(Controller2.ButtonR1.pressing()){
+        mLift.spin(fwd,15,pct);
+      }
+      else if(Controller2.ButtonR2.pressing()){
+        mLift.spin(reverse,15,pct);
+      }
+      else{
+        mLift.stop(hold);
+      }*/
+
+      /*if (Controller1.ButtonDown.pressing())
+      {
+        if (door == false)
+        {
+          door = true;
+        }
+        else if (door == true)
+        {
+          door = false;
+        }
+        sDoor.set(door);
+        vex ::wait(240, msec);
+      }*/
+
+      if (Controller1.ButtonUp.pressing())
+      {
+        if (upInt == false)
+        {
+          upInt = true;
+        }
+        else if (upInt == true)
+        {
+          upInt = false;
+        }
+        sintake.set(upInt);
+        vex ::wait(240, msec);
+      }
+
+      /*Controller1.Screen.clearLine();
+      Controller1.Screen.print(Inertial.rotation());
+      Controller1.Screen.print(" , ");
+      Controller1.Screen.print(mBackRight.position(degrees));*/
+      // This is the main execution loop for the user control program.
+      // Each time through the loop your program should update motor + servo
+      // values based on feedback from the joysticks.
+
+      // ........................................................................
+      // Insert user code here. This is where you use the joystick values to
+      // update your motors, etc.
+      // ........................................................................
+      Event.broadcast();
+      Event2.broadcast();
+      Event3.broadcast();
+      vex ::wait(20, msec);
+      // Brain.Screen.clearLine(); // Sleep the task for a short amount of time to
+      //  prevent wasted resources.
     }
 
 /*
@@ -509,23 +660,22 @@ void usercontrol(void)
     // Brain.Screen.clearLine(); // Sleep the task for a short amount of time to
     //  prevent wasted resources.
   }
-}
-
-//
-// Main will set up the competition functions and callbacks.
-//
-int main()
-{
-  // Set up callbacks for autonomous and driver control periods.
-  Competition.autonomous(autonomous);
-  Competition.drivercontrol(usercontrol);
-
-  // Run the pre-autonomous function.
-  pre_auton();
-
-  // Prevent main from exiting with an infinite loop.
-  while (true)
-  {
-    vex ::wait(100, msec);
   }
-}
+  //
+  // Main will set up the competition functions and callbacks.
+  //
+  int main()
+  {
+    // Set up callbacks for autonomous and driver control periods.
+    Competition.autonomous(autonomous);
+    Competition.drivercontrol(usercontrol);
+
+    // Run the pre-autonomous function.
+    pre_auton();
+
+    // Prevent main from exiting with an infinite loop.
+    while (true)
+    {
+      vex ::wait(100, msec);
+    }
+  }
