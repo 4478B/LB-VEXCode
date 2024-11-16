@@ -151,12 +151,6 @@ void updateController(double val, double sel, double mag)
 
 void autonomous(void)
 {
-  // auton = 25;
-  // oldDrivePID(1000,100);
-  // driveDeg(1000,1000,100);
-  /*Brain.Screen.clearLine();
-  Brain.Screen.print(mBackRight.position(degrees));*/
-  // inert(90);
   switch (autonSelection)
   {
   case 0:

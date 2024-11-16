@@ -42,7 +42,7 @@ void skillsAuto()
   driveInches(35,50);
   inert(135);
   sClamp.set(true);
-  drivePID(-27);
+  driveInches(-27,40);
   drivePID(25);
   inert(90);
   drivePID(130);
@@ -50,16 +50,19 @@ void skillsAuto()
   drivePID(30);
   drivePID(-30);
   inert(180);
-  drivePID(108);
-  inert(135);
+  drivePID(120);
+  inert(-90);
   drivePID(30);
-  drivePID(-30);
-  inert(270);
-  drivePID(108);
+  //drivePID(-30);
+  //inert(270);
+  /*drivePID(108);
   inert(225);
   drivePID(30);
   drivePID(-40);
   drivePID(30);
+  inert(95);*/
+  driveInches(400,70);
+  driveInches(-30,50);
 }
 void blueRightAuto(int i) // i is if its inversed or not (1 = regular, -1 = inversed)
 {
@@ -365,7 +368,7 @@ void halfAWP(int i) // this is daniel hand redleft and blueright
   drivePID(27);//+3; nvm
   wait(500,msec);
   drivePID(-4);
-  
+
   inert(-145*i);
   drivePID(20);
   wait(500,msec);
