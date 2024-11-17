@@ -312,7 +312,7 @@ void usercontrol(void)
   Rotation.resetPosition();
   armMotors.setPosition(0,deg);
 
-  while (true){
+  while (true) {
 
     leftMotors.spin(forward, logDriveJoystick(Controller1.Axis3.position(percent)), pct);
     rightMotors.spin(forward, logDriveJoystick(Controller1.Axis2.position(percent)), pct);
