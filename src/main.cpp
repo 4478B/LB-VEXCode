@@ -103,29 +103,11 @@ void usercontrol(void)
   while (1)
   {
 
-    double right = Controller1.Axis2.position(percent);
-    double left = Controller1.Axis3.position(percent);
+    double rightJoystick = Controller1.Axis2.position(percent);
+    double leftJoystick = Controller1.Axis3.position(percent);
 
-    if (left >= 0)
-    {
-      left = pow(left, d) / c;
-    }
-    else if (left < 0)
-    {
-      left = -(pow(-left, d) / c);
-    }
-
-    if (right >= 0)
-    {
-      right = pow(right, d) / c;
-    }
-    else if (right < 0)
-    {
-      right = -(pow(-right, d) / c);
-    }
-
-    leftMotors.spin(forward, left, pct);
-    rightMotors.spin(forward, right, pct);
+    leftMotors.spin(forward, logDriveJoystick(leftJoystick), pct);
+    rightMotors.spin(forward, logDriveJoystick(rightJoystick), pct);
 
     /*if (Controller1.ButtonY.pressing())
     { // enables PID Tuning mode *** DISABLE DURING COMPS
@@ -155,6 +137,7 @@ void usercontrol(void)
           }
       }
     }
+
     if (Controller1.ButtonR1.pressing())
     {
       mIntake.spin(fwd, 100, pct);

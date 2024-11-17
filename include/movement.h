@@ -21,17 +21,19 @@ void drivePIDClamp(double degs, double veloc);
 void driveInchesClamp(double fwdVal, int veloc);
 void oldDrivePID(double degs, double veloc);
 
-// Odometry
-void odometry();
-void setStartingOdomValues();
-void odomKillSwitch();
-
-
 // Arm Control
 void setArm(int armPos);
 void setArmBottom();
 void setArmMid();
 void setArmTop();
+
+// Log Drive
+double logDriveJoystick(double joystickPCT);
+
+// Odometry
+void odometry();
+void setStartingOdomValues();
+void odomKillSwitch();
 void odomDataCollection();
 
 #endif // MOVEMENT_H

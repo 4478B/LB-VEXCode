@@ -571,6 +571,23 @@ void setArmBottom() { setArm(1); }
 void setArmMid() { setArm(2); }
 void setArmTop() { setArm(3); }
 
+
+const double SMOOTHING_DENOMINATOR = 31.62278;  // Used to normalize the exponential curve
+const double EXPONENTIAL_POWER = 1.75;         // Controls how aggressive the curve is
+// Helper function that makes joystick input more precise for small movements
+// while maintaining full power at maximum joystick
+double logDriveJoystick(double joystickPCT) {
+    // Get the absolute value for calculation
+    double magnitude = fabs(joystickPCT);
+    
+    // Calculate the smoothed value
+    double smoothedValue = pow(magnitude, EXPONENTIAL_POWER) / SMOOTHING_DENOMINATOR;
+    
+    // Restore the original sign (positive or negative)
+    return joystickPCT >= 0 ? smoothedValue : -smoothedValue;
+}
+
+
 // Radius of parallel wheels
 const double WHEEL_RADIUS = 1.379;
 
