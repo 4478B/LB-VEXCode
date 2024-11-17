@@ -61,12 +61,8 @@ void inert(double target, double kP, double kI, double kD)
 
     //////////////////////// motor output
 
-    mBackLeft.spin(forward, output, percent);
-    mFrontLeft.spin(forward, output, percent);
-    mMidLeft.spin(forward, output, percent);
-    mMidRight.spin(forward, -output, percent);
-    mBackRight.spin(forward, -output, percent);
-    mFrontRight.spin(forward, -output, percent);
+    leftMotors.spin(forward, output, percent);
+    rightMotors.spin(forward, -output, percent);
 
     //      Printing values
 
@@ -76,12 +72,7 @@ void inert(double target, double kP, double kI, double kD)
       oscillation++;
       if(oscillation > 1){
         isComplete = true;
-        mBackLeft.stop(hold);
-        mFrontLeft.stop(hold);
-        mMidLeft.stop(hold);
-        mBackRight.stop(hold);
-        mFrontRight.stop(hold);
-        mMidRight.stop(hold);
+        allMotors.stop(hold);
         break;
       }
     }
@@ -95,19 +86,10 @@ void inertClamp(double t){
 
 void driveDeg(int DDegL, int DDegR, int veloc)
 {
-  mBackLeft.setVelocity(veloc, percent);
-  mBackRight.setVelocity(veloc, percent);
-  mFrontLeft.setVelocity(veloc, percent);
-  mFrontRight.setVelocity(veloc, percent);
-  mMidLeft.setVelocity(veloc, percent);
-  mMidRight.setVelocity(veloc, percent);
+  allMotors.setVelocity(veloc, percent);
 
-  mMidLeft.spinFor(forward, DDegL, degrees, false);
-  mMidRight.spinFor(forward, DDegR, degrees, false);
-  mBackLeft.spinFor(forward, DDegL, degrees, false);
-  mBackRight.spinFor(forward, DDegR, degrees, false);
-  mFrontLeft.spinFor(forward, DDegL, degrees, false);
-  mFrontRight.spinFor(forward, DDegR, degrees, true);
+  leftMotors.spinFor(forward, DDegL, degrees, false);
+  rightMotors.spinFor(forward, DDegR, degrees, false);
 }
 
 void drivePID(double inches, double kP, double kI, double kD, double goalThreshold)
@@ -133,14 +115,7 @@ void drivePID(double inches, double kP, double kI, double kD, double goalThresho
   } 
 
   // Reset motor encoder value to 0
-  mBackLeft.setPosition(0, degrees);
-  mFrontLeft.setPosition(0, degrees);
-  mMidLeft.setPosition(0, degrees);
-  mFrontRight.setPosition(0, degrees);
-  mBackRight.setPosition(0, degrees);
-  mMidRight.setPosition(0, degrees);
-
-
+  allMotors.setPosition(0, degrees);
 
   while (inGoal < goalsNeeded)  // CHECK IF IT SHOULD BE A < or <=
   {
@@ -165,12 +140,7 @@ void drivePID(double inches, double kP, double kI, double kD, double goalThresho
     totalPID = P + I + D;
 
     // Use totalPID to move motors proportionally
-    mBackLeft.spin(forward, totalPID, percent);
-    mFrontLeft.spin(forward, totalPID, percent);
-    mMidLeft.spin(forward, totalPID, percent);
-    mMidRight.spin(forward, totalPID, percent);
-    mBackRight.spin(forward, totalPID, percent);
-    mFrontRight.spin(forward, totalPID, percent);
+    allMotors.spin(forward, totalPID, percent);
 
     // Check if the error is small enough to stop
     if (fabs(currentDelta) < goalThreshold)
@@ -192,12 +162,7 @@ void drivePID(double inches, double kP, double kI, double kD, double goalThresho
     wait(pollingRate, msec);
   }
   // Stop the motors once goal is met
-  mBackLeft.stop();
-  mBackRight.stop();
-  mFrontLeft.stop();
-  mFrontRight.stop();
-  mMidLeft.stop();
-  mMidRight.stop();
+  allMotors.stop();
 }
 
 void tunerDrivePID(double inches, double kP, double kI, double kD, int ID)
@@ -248,12 +213,7 @@ void tunerDrivePID(double inches, double kP, double kI, double kD, int ID)
     totalPID = P + I + D;
 
     // Use totalPID to move motors proportionally
-    mBackLeft.spin(forward, totalPID, percent);
-    mFrontLeft.spin(forward, totalPID, percent);
-    mMidLeft.spin(forward, totalPID, percent);
-    mMidRight.spin(forward, totalPID, percent);
-    mBackRight.spin(forward, totalPID, percent);
-    mFrontRight.spin(forward, totalPID, percent);
+    allMotors.spin(forward, totalPID, percent);
 
     // Check if the error is small enough to stop
     if (fabs(currentDelta) < 30)
@@ -284,12 +244,7 @@ void tunerDrivePID(double inches, double kP, double kI, double kD, int ID)
     wait(pollingRate, msec);
   }
   // Stop the motors once goal is met
-  mBackLeft.stop();
-  mBackRight.stop();
-  mFrontLeft.stop();
-  mFrontRight.stop();
-  mMidLeft.stop();
-  mMidRight.stop();
+  allMotors.stop();
   // GRAPH EXCLUSIVE: print coordinates for advanced graphing
   if (ID != -1)
   {
@@ -305,23 +260,14 @@ void oldDrivePID(double degrs, double veloc)
 {
   double average = 0;
   // reset postion to zero
-  mBackLeft.setPosition(0, degrees);
-  mFrontLeft.setPosition(0, degrees);
-  mMidLeft.setPosition(0, degrees);
-  mFrontRight.setPosition(0, degrees);
-  mBackRight.setPosition(0, degrees);
-  mMidRight.setPosition(0, degrees);
+  allMotors.setPosition(0, degrees);
+
   if (degrs > 0)
   {
     while (average < degrs)
     {
       // spins while less than(average is the position of all the motors averages)
-      mBackLeft.spin(forward, veloc, pct);
-      mMidLeft.spin(forward, veloc, pct);
-      mFrontLeft.spin(forward, veloc, pct);
-      mBackRight.spin(forward, veloc, pct);
-      mMidRight.spin(forward, veloc, pct);
-      mFrontRight.spin(forward, veloc, pct);
+      allMotors.spin(forward, veloc, pct);
       average = (mBackLeft.position(degrees) + mBackRight.position(degrees) + mFrontLeft.position(degrees) + mMidLeft.position(degrees) + mMidRight.position(degrees) + mFrontRight.position(degrees)) / 6;
       // slows down in last 100
       if (veloc > 15 && (average) > (degrs - 80))
@@ -336,12 +282,7 @@ void oldDrivePID(double degrs, double veloc)
     while (average > degrs)
     {
       // same thing for other direction
-      mBackLeft.spin(reverse, veloc, pct);
-      mMidLeft.spin(reverse, veloc, pct);
-      mFrontLeft.spin(reverse, veloc, pct);
-      mBackRight.spin(reverse, veloc, pct);
-      mMidRight.spin(reverse, veloc, pct);
-      mFrontRight.spin(reverse, veloc, pct);
+      allMotors.spin(reverse, veloc, pct);
       average = (mBackLeft.position(degrees) + mBackRight.position(degrees) + mFrontLeft.position(degrees) + mMidLeft.position(degrees) + mMidRight.position(degrees) + mFrontRight.position(degrees)) / 6;
       if (veloc > 15 && (average) < (degrs + 100))
       {
@@ -350,13 +291,7 @@ void oldDrivePID(double degrs, double veloc)
       vex ::wait(10, msec);
     }
   }
-  /*
-    mBackLeft.stop(hold);
-    mBackRight.stop(hold);
-    mFrontLeft.stop(hold);
-    mFrontRight.stop(hold);
-    mMidLeft.stop(hold);
-    mMidRight.stop(hold);*/
+  // allMotors.stop(hold);
   vex ::wait(200, msec);
 }
 
@@ -365,23 +300,13 @@ void drivePIDClamp(double degrs, double veloc)
   double average = 0;
   bool clampPOS = true;
   // reset postion to zero
-  mBackLeft.setPosition(0, degrees);
-  mFrontLeft.setPosition(0, degrees);
-  mMidLeft.setPosition(0, degrees);
-  mFrontRight.setPosition(0, degrees);
-  mBackRight.setPosition(0, degrees);
-  mMidRight.setPosition(0, degrees);
+  allMotors.setPosition(0, degrees);
   if (degrs > 0)
   {
     while (average < degrs)
     {
       // spins while less than(average is the position of all the motors averages)
-      mBackLeft.spin(forward, veloc, pct);
-      mMidLeft.spin(forward, veloc, pct);
-      mFrontLeft.spin(forward, veloc, pct);
-      mBackRight.spin(forward, veloc, pct);
-      mMidRight.spin(forward, veloc, pct);
-      mFrontRight.spin(forward, veloc, pct);
+      allMotors.spin(forward, veloc, pct);
       average = (mBackLeft.position(degrees) + mBackRight.position(degrees) + mFrontLeft.position(degrees) + mMidLeft.position(degrees) + mMidRight.position(degrees) + mFrontRight.position(degrees)) / 6;
       // slows down in last 100
       if (veloc > 15 && (average) > (degrs - 250))
@@ -401,12 +326,7 @@ void drivePIDClamp(double degrs, double veloc)
     while (average > degrs)
     {
       // same thing for other direction
-      mBackLeft.spin(reverse, veloc, pct);
-      mMidLeft.spin(reverse, veloc, pct);
-      mFrontLeft.spin(reverse, veloc, pct);
-      mBackRight.spin(reverse, veloc, pct);
-      mMidRight.spin(reverse, veloc, pct);
-      mFrontRight.spin(reverse, veloc, pct);
+      allMotors.spin(reverse, veloc, pct);
       average = (mBackLeft.position(degrees) + mBackRight.position(degrees) + mFrontLeft.position(degrees) + mMidLeft.position(degrees) + mMidRight.position(degrees) + mFrontRight.position(degrees)) / 6;
       if (veloc > 15 && (average) < (degrs + 150))
       {
@@ -632,8 +552,7 @@ void setArm(int position) {
     totalPID = P + I + D;
 
     // Apply motor movement
-    mLift.spin(forward, totalPID, percent);
-    mLift2.spin(forward, totalPID, percent);
+    armMotors.spin(forward, totalPID, percent);
     
     if (fabs(currentDelta) < 2) {
       goalMet++;
@@ -644,8 +563,7 @@ void setArm(int position) {
   }
 
   // Stop motors
-  mLift.stop(hold);
-  mLift2.stop(hold);
+  armMotors.stop(hold);
 }
 
 // aliases for specific positions

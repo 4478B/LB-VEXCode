@@ -43,23 +43,15 @@ void pre_auton(void)
 void autonomous(void)
 {
   // Calibrates motor encoders to reduce drift
-  mBackLeft.setPosition(0,deg);
-  mBackRight.setPosition(0,deg);
-  mFrontLeft.setPosition(0,deg);
-  mFrontRight.setPosition(0,deg);
-  mMidLeft.setPosition(0,deg);
-  mMidRight.setPosition(0,deg);
+  allMotors.setPosition(0,deg);
+  Rotation.resetPosition();
+  armMotors.setPosition(0,deg);
 
   // Performs selected autonomous route
   getAutonSelector().runSelectedAuton();
   
   // Stops motors to prevent crossing field
-  mBackLeft.stop();
-  mBackRight.stop();
-  mFrontLeft.stop();
-  mFrontRight.stop();
-  mMidLeft.stop();
-  mMidRight.stop();
+  allMotors.stop();
 }
 
 bool clamp = false;
@@ -104,14 +96,9 @@ event Event3 = event(setArmTop);
 vex::thread arm();*/
 void usercontrol(void)
 {
-  mBackLeft.stop(coast);
-  mBackRight.stop(coast);
-  mFrontLeft.stop(coast);
-  mFrontRight.stop(coast);
-  mMidLeft.stop(coast);
-  mMidRight.stop(coast);
+  allMotors.stop(coast);
   Rotation.resetPosition();
-  mLift.setPosition(0,deg);
+  armMotors.setPosition(0,deg);
   // User control code here, inside the loop
   while (1)
   {
@@ -137,12 +124,8 @@ void usercontrol(void)
       right = -(pow(-right, d) / c);
     }
 
-    mFrontRight.spin(forward, right, pct);
-    mBackRight.spin(forward, right, pct);
-    mBackLeft.spin(forward, left, pct);
-    mFrontLeft.spin(forward, left, pct);
-    mMidLeft.spin(forward, left, pct);
-    mMidRight.spin(forward, right, pct);
+    leftMotors.spin(forward, left, pct);
+    rightMotors.spin(forward, right, pct);
 
     /*if (Controller1.ButtonY.pressing())
     { // enables PID Tuning mode *** DISABLE DURING COMPS

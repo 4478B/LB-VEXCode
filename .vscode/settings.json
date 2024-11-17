@@ -4,6 +4,7 @@
     ],
     "C_Cpp.default.compilerPath": "c:\\Users\\lesfa\\Documents\\vex-vscode-projects\\vscode1\\src\\main.cpp",
     "files.associations": {
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "*.tcc": "cpp"
     }
 }

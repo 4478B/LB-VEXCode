@@ -28,6 +28,7 @@ extern rotation Rotation;
 // motor group declarations
 extern motor_group leftMotors; // group of all left side drive train motors
 extern motor_group rightMotors; // group of all right side drive train motors
+extern motor_group allMotors; // group of all drive train motors
 extern motor_group armMotors;
 
 // Digital-out device declarations
