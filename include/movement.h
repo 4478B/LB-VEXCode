@@ -15,11 +15,8 @@ void GraphPID(double rangeP, double rangeD, double guessP, double guessD, int sq
 void inert(double target, double kP = 0.499, double kI = 0, double kD = 0.002);
 
 // Open-loop Driving
-void driveDeg(int DDegL, int DDegR, int veloc);
-void driveInches(double fwdVal, int veloc);
-void drivePIDClamp(double degs, double veloc);
+void driveInches(double fwdVal, int veloc, bool clamping = false);
 void driveInchesClamp(double fwdVal, int veloc);
-void oldDrivePID(double degs, double veloc);
 
 // Arm Control
 void setArm(int armPos);

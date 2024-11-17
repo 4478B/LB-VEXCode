@@ -77,7 +77,7 @@ AutonSelector& getAutonSelector() {
 /* Autonomous routines */
 void skillsAuto(int i)
 {
-  drivePIDClamp(-200, 40);
+  driveInchesClamp(-200, 40);  // VALUE NEEDS TO BE TWEAKED
   mIntake.spin(fwd, 100, pct);
   wait(700,msec);
   inert(-90);
@@ -110,7 +110,7 @@ void blueRightAuto(int i) // i is if its inversed or not (1 = regular, -1 = inve
 {
   // this auto is intended to score 5 rings in one goal and score one on a side stake
   // Grab Goal
-  drivePIDClamp(-1320, 50);
+  driveInchesClamp(-1320, 50);  // VALUE NEEDS TO BE TWEAKED
   // Turn towards mid ring stack
   inert(i*-140);
   mIntake.spin(forward, 100, pct); // Turn on intake
@@ -142,7 +142,7 @@ void blueMidAuto(int i)
 {
   // Starting position: In blue right corner, facing mobile goal
   drivePID(-27); 
-  drivePIDClamp(-300, 30);
+  driveInchesClamp(-300, 30); // VALUE NEEDS TO BE TWEAKED
   inert(-104*i);
   wait(500, msec);
   mIntake.spin(forward, 100, pct);
@@ -163,7 +163,7 @@ void blueMidAuto(int i)
   inert(125*i);
   drivePID(60);     
   inert(0);
-  drivePIDClamp(-1400,80);
+  driveInchesClamp(-1400,80);  // VALUE NEEDS TO BE TWEAKED
   wait(300,msec);
   inert(125*i);
   mIntake.spin(fwd, 100,pct);
@@ -174,7 +174,7 @@ void redleftAuto(int i)
   // this auto is intended to score 5 rings
   // in one goal and score one on a side stake
   // Grab Goal
-  drivePIDClamp(-1100, 80);
+  driveInchesClamp(-1100, 80);  // VALUE NEEDS TO BE TWEAKED
   // Turn on intake
   mIntake.spin(forward, 100, pct);
   // Turn towards mid ring stack
@@ -214,7 +214,7 @@ void redleftAuto(int i)
   sintake.set(false);
   // put ring on alliance stake after
   // turning and lift life
-  oldDrivePID(-10, 50);
+  driveInches(-10, 50); // VALUE NEEDS TO BE TWEAKED
   mIntake.stop();
   inert(-27);
   sDoor.set(true);
@@ -394,7 +394,7 @@ void AWP(int i)
 void halfAWP(int i) // this is daniel hand redleft and blueright
 {
   drivePID(-27); 
-  drivePIDClamp(-300, 30);
+  driveInchesClamp(-300, 30);  // VALUE NEEDS TO BE TWEAKED
   wait(500,msec);
   mIntake.spin(forward, 100, pct);
   /*

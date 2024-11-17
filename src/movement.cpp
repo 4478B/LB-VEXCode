@@ -6,6 +6,10 @@
 #include <iomanip>
 using namespace vex;
 
+// Radius of wheels
+const double WHEEL_RADIUS = 1.375;
+
+
 double turnSlewStep = 6;
 
 double turnSlew(double val)
@@ -82,14 +86,6 @@ void inert(double target, double kP, double kI, double kD)
 
 void inertClamp(double t){
   inert(t, 0.499, 0.0, 0.002);
-}
-
-void driveDeg(int DDegL, int DDegR, int veloc)
-{
-  allMotors.setVelocity(veloc, percent);
-
-  leftMotors.spinFor(forward, DDegL, degrees, false);
-  rightMotors.spinFor(forward, DDegR, degrees, false);
 }
 
 void drivePID(double inches, double kP, double kI, double kD, double goalThreshold)
@@ -256,126 +252,54 @@ void tunerDrivePID(double inches, double kP, double kI, double kD, int ID)
   }
 }
 
-void oldDrivePID(double degrs, double veloc)
+void driveInches(double inches, int veloc, bool clamping)
 {
+  // gear ratios
+  const double input = 36; 
+  const double output = 48;
+  
+  // adjusted inches based on gear ratios
+  double adjustedInches = inches * (output / input);
+
+  //conversion from inches to degrees
+  double degrs = (inches * 180) / (WHEEL_RADIUS * M_PI);
+
   double average = 0;
-  // reset postion to zero
   allMotors.setPosition(0, degrees);
 
-  if (degrs > 0)
-  {
-    while (average < degrs)
-    {
-      // spins while less than(average is the position of all the motors averages)
-      allMotors.spin(forward, veloc, pct);
-      average = (mBackLeft.position(degrees) + mBackRight.position(degrees) + mFrontLeft.position(degrees) + mMidLeft.position(degrees) + mMidRight.position(degrees) + mFrontRight.position(degrees)) / 6;
-      // slows down in last 100
-      if (veloc > 15 && (average) > (degrs - 80))
-      {
-        veloc = veloc * ((degrs - average) / degrs);
+  // Determine direction of movement
+  directionType moveDirection = (degrs >= 0) ? forward : reverse;
+  // Use absolute value for comparisons
+  double targetDegrees = fabs(degrs);
+  double slowdownThreshold = (degrs >= 0) ? 250 : 150;
+
+  while ((moveDirection == forward && average < degrs) ||
+         (moveDirection == reverse && average > degrs)) {
+      // Calculate average position
+      average = (mBackLeft.position(degrees) + 
+                mBackRight.position(degrees) + 
+                mFrontLeft.position(degrees) + 
+                mMidLeft.position(degrees) + 
+                mMidRight.position(degrees) + 
+                mFrontRight.position(degrees)) / 6;
+
+      // Spin motors in appropriate direction
+      allMotors.spin(moveDirection, veloc, pct);
+
+      // Handle slowdown and clamp
+      double distanceRemaining = fabs(degrs - average);
+      if (veloc > 15 && distanceRemaining < slowdownThreshold) {
+          veloc = veloc * (distanceRemaining / targetDegrees);
+          // Set clamp opposite to current value
+          if(clamping){sClamp.set(!sClamp.value());}
       }
-      vex ::wait(10, msec);
-    }
+
+      vex::wait(10, msec);
   }
-  else if (degrs < 0)
-  {
-    while (average > degrs)
-    {
-      // same thing for other direction
-      allMotors.spin(reverse, veloc, pct);
-      average = (mBackLeft.position(degrees) + mBackRight.position(degrees) + mFrontLeft.position(degrees) + mMidLeft.position(degrees) + mMidRight.position(degrees) + mFrontRight.position(degrees)) / 6;
-      if (veloc > 15 && (average) < (degrs + 100))
-      {
-        veloc = veloc * ((degrs - average) / degrs);
-      }
-      vex ::wait(10, msec);
-    }
-  }
-  // allMotors.stop(hold);
-  vex ::wait(200, msec);
 }
 
-void drivePIDClamp(double degrs, double veloc)
-{
-  double average = 0;
-  bool clampPOS = true;
-  // reset postion to zero
-  allMotors.setPosition(0, degrees);
-  if (degrs > 0)
-  {
-    while (average < degrs)
-    {
-      // spins while less than(average is the position of all the motors averages)
-      allMotors.spin(forward, veloc, pct);
-      average = (mBackLeft.position(degrees) + mBackRight.position(degrees) + mFrontLeft.position(degrees) + mMidLeft.position(degrees) + mMidRight.position(degrees) + mFrontRight.position(degrees)) / 6;
-      // slows down in last 100
-      if (veloc > 15 && (average) > (degrs - 250))
-      {
-        veloc = veloc * ((degrs - average) / degrs);
-        if (clampPOS == true)
-        {
-          sClamp.set(true);
-          clampPOS = true;
-        }
-      }
-      vex ::wait(10, msec);
-    }
-  }
-  else if (degrs < 0)
-  {
-    while (average > degrs)
-    {
-      // same thing for other direction
-      allMotors.spin(reverse, veloc, pct);
-      average = (mBackLeft.position(degrees) + mBackRight.position(degrees) + mFrontLeft.position(degrees) + mMidLeft.position(degrees) + mMidRight.position(degrees) + mFrontRight.position(degrees)) / 6;
-      if (veloc > 15 && (average) < (degrs + 150))
-      {
-        veloc = veloc * ((degrs - average) / degrs);
-        if (clampPOS == true)
-        {
-          sClamp.set(false);
-          clampPOS = false;
-        }
-      }
-      vex ::wait(10, msec);
-    }
-  }
-  /*
-    mBackLeft.stop(hold);
-    mBackRight.stop(hold);
-    mFrontLeft.stop(hold);
-    mFrontRight.stop(hold);
-    mMidLeft.stop(hold);
-    mMidRight.stop(hold);*/
-}
-
-void driveInches(double fwdVal, int veloc)
-{
-  const double diameter = 2.75;
-  const double pi = 3.1415;
-  const double input = 36;
-  const double output = 48;
-
-  double num = fwdVal;
-  double denom = (diameter * pi) * (input / output);
-  double fwdInches = num / denom * 360;
-
-  oldDrivePID(fwdInches, veloc);
-}
-
-void driveInchesClamp(double fwdVal, int veloc)
-{
-  const double diameter = 2.75;
-  const double pi = 3.1415;
-  const double input = 36;
-  const double output = 48;
-
-  double num = fwdVal;
-  double denom = (diameter * pi) * (input / output);
-  double fwdInches = num / denom * 360;
-
-  drivePIDClamp(fwdInches, veloc);
-}
+// alias for clamping mode
+void driveInchesClamp(double inches, int veloc) { driveInches(inches, veloc, true); }
 
 void tunePID()
 {
@@ -588,8 +512,7 @@ double logDriveJoystick(double joystickPCT) {
 }
 
 
-// Radius of parallel wheels
-const double WHEEL_RADIUS = 1.379;
+
 
 // distance between right wheel and tracking center [inches?]
 const double rDist = 5;
