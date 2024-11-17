@@ -3,28 +3,33 @@
 
 #include <functional>
 
-// Structure to hold autonomous routine information
-struct AutonRoutine {
-    const char* displayName;
-    std::function<void(int)> routine;
-    int multiplier;
-};
+// Forward declarations of autonomous functions
+void rightAuto(int direction);
+void halfAWP(int direction);
+void blueRightAuto(int direction);
+void skillsAuto(int direction);
+void AWP(int direction);
+void blueMidAuto(int direction);
+
+// Forward declaration of internal structs/classes
+struct AutonRoutine;
 
 class AutonSelector {
 private:
-    static const AutonRoutine routines[];  // Array declaration
-    int currentSelection;  // Default to AWP (Route 5)
-    const int routineCount;
+    const AutonRoutine* routines;  // Pointer to array of routines
+    int currentSelection;          // Current selected routine
+    int routineCount;             // Total number of routines
 
 public:
+    AutonSelector();  // Constructor
     void nextSelection();
     void displayCurrentSelection();
     void runSelectedAuton();
     int getCurrentSelection() const;
 };
 
-// Declare the global instance that will be used by other files
-extern AutonSelector autonSelector;
+// Global instance getter
+AutonSelector& getAutonSelector();
 
 
 // Forward declarations for autonomous routes

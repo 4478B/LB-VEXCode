@@ -19,42 +19,15 @@ using namespace vex;
  * Add/remove routines by editing the "routines" array below.
  */
 
-// Define the structure type before the class
+// Full definition of AutonRoutine struct
 struct AutonRoutine {
     const char* displayName;
     std::function<void(int)> routine;
     int multiplier;
 };
 
-class AutonSelector {
-private:
-    static const AutonRoutine routines[];  // Declare array
-    int currentSelection = 5;  // Displayed as Route 5 (AWP)
-    const int routineCount = 8;  // Total number of routines
-
-public:
-    void nextSelection() {
-        currentSelection = (currentSelection % routineCount) + 1;  // Loop 1 to routineCount
-        displayCurrentSelection();
-    }
-
-    void displayCurrentSelection() {
-        Brain.Screen.clearLine();
-        printCenter(routines[currentSelection - 1].displayName);  // Offset by -1 for array access
-    }
-
-    void runSelectedAuton() {
-        const AutonRoutine& selected = routines[currentSelection - 1];  // Offset by -1 for array access
-        selected.routine(selected.multiplier);
-    }
-
-    int getCurrentSelection() const {
-        return currentSelection;  // Returns 1-based route number
-    }
-};
-
-// Define the static array outside the class
-const AutonRoutine AutonSelector::routines[] = {
+// Define the routines array
+static const AutonRoutine ROUTINES[] = {
     {"Right side", rightAuto, 1},      // Route 1
     {"Red Left Auto", halfAWP, -1},    // Route 2
     {"Blue Right Auto", blueRightAuto, 1}, // Route 3
@@ -65,8 +38,39 @@ const AutonRoutine AutonSelector::routines[] = {
     {"Blue Mid Auto", blueMidAuto, 1}  // Route 8
 };
 
-// Declare global instance
-AutonSelector autonSelector;
+// Create static instance
+static AutonSelector instance;
+
+// Constructor implementation
+AutonSelector::AutonSelector() : 
+    routines(ROUTINES),
+    currentSelection(5),  // Start with AWP (Route 5)
+    routineCount(sizeof(ROUTINES) / sizeof(ROUTINES[0]))
+{}
+
+void AutonSelector::nextSelection() {
+    currentSelection = (currentSelection % routineCount) + 1;
+    displayCurrentSelection();
+}
+
+void AutonSelector::displayCurrentSelection() {
+    Brain.Screen.clearLine();
+    printCenter(routines[currentSelection - 1].displayName);
+}
+
+void AutonSelector::runSelectedAuton() {
+    const AutonRoutine& selected = routines[currentSelection - 1];
+    selected.routine(selected.multiplier);
+}
+
+int AutonSelector::getCurrentSelection() const {
+    return currentSelection;
+}
+
+// Global instance getter implementation
+AutonSelector& getAutonSelector() {
+    return instance;
+}
 
 //=============================================================================
 

@@ -103,9 +103,10 @@ void pre_auton(void)
   //vex::thread odom(odometry); // after calibrated, can start odometry
   //vex::thread odomData(odomDataCollection);
 
-  autonSelector.displayCurrentSelection(); // allows user to rotate through autons
+  AutonSelector& selector = getAutonSelector();
+    selector.displayCurrentSelection();
     Brain.Screen.pressed([]() {
-        autonSelector.nextSelection();
+        getAutonSelector().nextSelection();
     });
     
   vex ::wait(4, sec);
@@ -165,7 +166,7 @@ void autonomous(void)
   mMidRight.setPosition(0,deg);
 
   // Performs selected autonomous route
-  autonSelector.runSelectedAuton();
+  getAutonSelector().runSelectedAuton();
   
   // Stops motors to prevent crossing field
   mBackLeft.stop();

@@ -1,11 +1,9 @@
 {
-<<<<<<< HEAD
     "C_Cpp.default.systemIncludePath": [
-        "${config:vexrobotics.vexcode.Cpp.Sdk.Home}/V5/V5_20240223_11_00_00/vexv5/gcc/include/sys"
-    ]
-=======
-  "C_Cpp.default.systemIncludePath": [
-    "${config:vexrobotics.vexcode.Cpp.Sdk.Home}/V5/V5_20240223_11_00_00/vexv5/gcc/include/sys"
-  ]
->>>>>>> 434b97360ec69b6518a4aec4c66e88bdc96feef0
+        "${config:vexrobotics.vexcode.Cpp.Sdk.Home}\\V5\\V5_20240223_11_00_00\\vexv5\\gcc\\include\\sys"
+    ],
+    "C_Cpp.default.compilerPath": "c:\\Users\\lesfa\\Documents\\vex-vscode-projects\\vscode1\\src\\main.cpp",
+    "files.associations": {
+        "iostream": "cpp"
+    }
 }
