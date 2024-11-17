@@ -20,6 +20,11 @@ distance ringCheck = distance(PORT17);
 inertial Inertial = inertial(PORT20);
 rotation Rotation = rotation(PORT2);
 
+// Motor group definitions
+motor_group leftMotors = motor_group(mBackLeft, mMidLeft, mFrontLeft); // group of all left side drive train motors
+motor_group rightMotors = motor_group(mBackRight, mMidRight, mFrontRight); // group of all right side drive train motors
+motor_group armMotors = motor_group(mLift, mLift2);
+
 // Digital-out device definitions
 digital_out sClamp = digital_out(Brain.ThreeWirePort.B);
 digital_out sDoor = digital_out(Brain.ThreeWirePort.F);

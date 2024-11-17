@@ -1,30 +1,11 @@
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
-/*    Author:       VEX                                                       */
-/*    Created:      Thu Sep 26 2019                                           */
-/*    Description:  Competition Template                                      */
+/*    Author:       4478B                                                     */
+/*    Created:      Sat Nov 16 2024                                           */
+/*    Description:  Competition functions                                     */
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
-
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// mBackRight           motor         20
-// mBackLeft            motor         9
-// mFrontRight          motor         1
-// mFrontLeft           motor         2
-// Controller1          controller
-// mIntake              motor         3
-// mPuncher             motor         6
-// Inertial             inertial      17
-// sWing                digital_out   G
-// shotBlock            digital_out   F
-// mMidLeft             motor         14
-// mMidRight            motor         5
-// CataStop             limit         A
-// FrontWings           digital_out   B
-// ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "main.h"
 #include "devices.h"
@@ -34,17 +15,6 @@
 #include <iostream>
 #include <string>
 using namespace vex;
-
-void printCenter(const char* input)
-{
-  // Screen Size (x,y) = (480, 240)
-  int width = Brain.Screen.getStringWidth(input);
-  int xOffset = 240 - width/2;
-  if (width <= 480){
-    Brain.Screen.clearScreen();
-    Brain.Screen.printAt(xOffset, 120, input);
-  }
-}
 
 void pre_auton(void)
 {
@@ -68,49 +38,6 @@ void pre_auton(void)
     });
     
   vex ::wait(4, sec);
-}
-
-/*
-The overloaded function updateController is optimized
-to only change the values necessary for increased responsiveness.
-1. Updates whole screen (most time-consuming)
-2. Updates magnitude (least time-consuming)
-3. Changes one line (somewhat time-consuming)
-*/
-// for changing whole screen
-void updateController(double kP, double kI, double kD, int sel, double mag)
-{
-  Controller1.Screen.clearScreen();
-  Controller1.Screen.setCursor(sel + 1, 1);
-  Controller1.Screen.print("*"); // creates marker for current selected value
-  Controller1.Screen.setCursor(1, 2);
-  Controller1.Screen.print(kP);
-  Controller1.Screen.setCursor(2, 2);
-  Controller1.Screen.print(kI);
-  Controller1.Screen.setCursor(3, 2);
-  Controller1.Screen.print(kD); // prints P I D on new lines
-  Controller1.Screen.setCursor(2, 14);
-  Controller1.Screen.print(mag);
-}
-// for changing just magnitude
-void updateController(double mag)
-{
-  Controller1.Screen.setCursor(2, 14);
-  Controller1.Screen.print(mag);
-}
-// for changing one line
-void updateController(double val, double sel, double mag)
-{
-  sel += 1;
-  Controller1.Screen.clearLine(sel);
-  Controller1.Screen.setCursor(sel, 1);
-  Controller1.Screen.print("*");
-  Controller1.Screen.setCursor(sel, 2);
-  Controller1.Screen.print(val);
-  if (sel == 2)
-  {
-    updateController(mag);
-  }
 }
 
 void autonomous(void)
@@ -457,5 +384,59 @@ int main()
   while (true)
   {
     vex ::wait(100, msec);
+  }
+}
+
+/*
+The overloaded function updateController is optimized
+to only change the values necessary for increased responsiveness.
+1. Updates whole screen (most time-consuming)
+2. Updates magnitude (least time-consuming)
+3. Changes one line (somewhat time-consuming)
+*/
+// for changing whole screen
+void updateController(double kP, double kI, double kD, int sel, double mag)
+{
+  Controller1.Screen.clearScreen();
+  Controller1.Screen.setCursor(sel + 1, 1);
+  Controller1.Screen.print("*"); // creates marker for current selected value
+  Controller1.Screen.setCursor(1, 2);
+  Controller1.Screen.print(kP);
+  Controller1.Screen.setCursor(2, 2);
+  Controller1.Screen.print(kI);
+  Controller1.Screen.setCursor(3, 2);
+  Controller1.Screen.print(kD); // prints P I D on new lines
+  Controller1.Screen.setCursor(2, 14);
+  Controller1.Screen.print(mag);
+}
+// for changing just magnitude
+void updateController(double mag)
+{
+  Controller1.Screen.setCursor(2, 14);
+  Controller1.Screen.print(mag);
+}
+// for changing one line
+void updateController(double val, double sel, double mag)
+{
+  sel += 1;
+  Controller1.Screen.clearLine(sel);
+  Controller1.Screen.setCursor(sel, 1);
+  Controller1.Screen.print("*");
+  Controller1.Screen.setCursor(sel, 2);
+  Controller1.Screen.print(val);
+  if (sel == 2)
+  {
+    updateController(mag);
+  }
+}
+
+void printCenter(const char* input)
+{
+  // Screen Size (x,y) = (480, 240)
+  int width = Brain.Screen.getStringWidth(input);
+  int xOffset = 240 - width/2;
+  if (width <= 480){
+    Brain.Screen.clearScreen();
+    Brain.Screen.printAt(xOffset, 120, input);
   }
 }
