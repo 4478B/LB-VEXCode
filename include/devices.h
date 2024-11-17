@@ -34,7 +34,7 @@ extern motor_group armMotors;
 // Digital-out device declarations
 extern digital_out sClamp;
 extern digital_out sDoor;
-extern digital_out sintake;
+extern digital_out sIntake;
 
 // Limit switch declarations
 extern limit limitS;

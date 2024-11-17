@@ -62,15 +62,9 @@ int count = 0;
 int armCount = 0;
 int armPos = 1;
 bool definedVar = false;
-bool running = false;
-const double c = 31.62278;
-/* temp evan code for calculating c
-const double logDriveMag = 1.75;  // sets magnitude for log drive
-const double logDriveAligner = floor(pow(100,logDriveMag) * 100)/10000; // 100 pwr at 100 pct control
-*/
-bool pidRunning = false;
 
-const double d = 1.75;
+bool running = false;
+bool pidRunning = false;
 
 double targetDeg;
 double kP = 80;
@@ -87,38 +81,27 @@ double integralSum;   // Cumulative error for integral term
 double targetDegInpRot;
 double targetDegInp;
 
-bool skip = false;
 double prevRot = 0;
 
 /*event Event = event(setArmBottom);
 event Event2 = event(setArmMid);
 event Event3 = event(setArmTop);
 vex::thread arm();*/
-void usercontrol(void)
-{
-  allMotors.stop(coast);
-  Rotation.resetPosition();
-  armMotors.setPosition(0,deg);
-  // User control code here, inside the loop
-  while (1)
-  {
 
-    double rightJoystick = Controller1.Axis2.position(percent);
-    double leftJoystick = Controller1.Axis3.position(percent);
-
-    leftMotors.spin(forward, logDriveJoystick(leftJoystick), pct);
-    rightMotors.spin(forward, logDriveJoystick(rightJoystick), pct);
-
-    /*if (Controller1.ButtonY.pressing())
-    { // enables PID Tuning mode *** DISABLE DURING COMPS
-      tunePID();
+void handleTuner(){
+  if (Controller1.ButtonY.pressing())
+    {
       std::cout << "enabling tunePID." << std::endl;
-    }*/
+      tunePID();
+    }
+}
 
-    if (Controller1.ButtonX.pressing())
+void handleMacro(){
+  if (Controller1.ButtonX.pressing())
     {
       macro = !macro;  // Toggle macro state
       if (!macro) count = 0;  // Reset count when turning off
+      // Debounce delay to prevent multiple toggles
       wait(240, msec);
     }
     if (macro) {
@@ -137,8 +120,10 @@ void usercontrol(void)
           }
       }
     }
+}
 
-    if (Controller1.ButtonR1.pressing())
+void handleIntake(){
+  if (Controller1.ButtonR1.pressing())
     {
       mIntake.spin(fwd, 100, pct);
     }
@@ -151,11 +136,24 @@ void usercontrol(void)
       mIntake.stop();
     }
 
-    if (Controller1.ButtonB.pressing()) {
+  if (Controller1.ButtonUp.pressing()) {
+    // Toggle intake to opposite of current state
+    sIntake.set(!sIntake.value());
+    // Debounce delay to prevent multiple toggles
+    vex::wait(240, msec);
+  } 
+}
+
+void handleClamp(){
+  if (Controller1.ButtonB.pressing()) {
     clamp = !clamp;  // Toggle clamp state
     sClamp.set(clamp);
+    // Debounce delay to prevent multiple toggles
     wait(240, msec);
     }
+}
+
+void handleArm(){
 
     //cannot call the same pos twice
     if((Controller1.ButtonL1.pressing()||Controller2.ButtonL1.pressing()) && pidRunning==false && armPos!=1){ 
@@ -245,14 +243,8 @@ void usercontrol(void)
           // Calculate the current error
           currentDelta = error;
 
-          if(armCount%15==0 && armCount>=50){
-            if(fabs(prevRot-currentPosition)<30){
-              //skip=true; The arm is working fine without this, but can add back if needed
-            }
-            else{
-              prevRot = currentPosition;
-            }
-          }
+          prevRot = currentPosition;
+
           // Proportional: Larger error results in larger response
           P = (kP / 1000) * currentDelta;
 
@@ -270,7 +262,7 @@ void usercontrol(void)
           mLift.spin(forward, totalPID, percent); //THIS MIGHT NEED TO BE REVERSED
           mLift2.spin(forward, totalPID, percent);
           // Check if the error is small enough to stop
-          if (fabs(currentDelta) < 2 || skip==true)
+          if (fabs(currentDelta) < 2)
           {
             goalMet++;
             pidRunning=false;
@@ -300,22 +292,6 @@ void usercontrol(void)
       mLift2.stop(hold);
     }
 
-    
-
-    if (Controller1.ButtonUp.pressing())
-    {
-      if (upInt == false)
-      {
-        upInt = true;
-      }
-      else if (upInt == true)
-      {
-        upInt = false;
-      }
-      sintake.set(upInt);
-      vex ::wait(240, msec);
-    }
-
 /*
     if(armPos==1){
 
@@ -327,10 +303,27 @@ void usercontrol(void)
     else if(armPos==3){
       Event3.broadcast();
     }*/
+
+}
+
+void usercontrol(void)
+{
+  allMotors.stop(coast);
+  Rotation.resetPosition();
+  armMotors.setPosition(0,deg);
+
+  while (true){
+
+    leftMotors.spin(forward, logDriveJoystick(Controller1.Axis3.position(percent)), pct);
+    rightMotors.spin(forward, logDriveJoystick(Controller1.Axis2.position(percent)), pct);
+
+    //handleTuner(); // *** DISABLE DURING COMPS ***
+    handleMacro();
+    handleIntake();
+    handleClamp();
+    handleArm();
     
     vex ::wait(20, msec);
-    // Brain.Screen.clearLine(); // Sleep the task for a short amount of time to
-    //  prevent wasted resources.
   }
 }
 
@@ -352,6 +345,8 @@ int main()
     vex ::wait(100, msec);
   }
 }
+
+
 
 /*
 The overloaded function updateController is optimized

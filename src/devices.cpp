@@ -29,7 +29,7 @@ motor_group armMotors = motor_group(mLift, mLift2);
 // Digital-out device definitions
 digital_out sClamp = digital_out(Brain.ThreeWirePort.B);
 digital_out sDoor = digital_out(Brain.ThreeWirePort.F);
-digital_out sintake = digital_out(Brain.ThreeWirePort.D);
+digital_out sIntake = digital_out(Brain.ThreeWirePort.D);
 
 // Limit switch definitions
 limit limitS = limit(Brain.ThreeWirePort.E);

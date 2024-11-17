@@ -262,7 +262,7 @@ void driveInches(double inches, int veloc, bool clamping)
   double adjustedInches = inches * (output / input);
 
   //conversion from inches to degrees
-  double degrs = (inches * 180) / (WHEEL_RADIUS * M_PI);
+  double degrs = (adjustedInches * 180) / (WHEEL_RADIUS * M_PI);
 
   double average = 0;
   allMotors.setPosition(0, degrees);
