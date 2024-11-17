@@ -9,7 +9,7 @@
 extern int autonSelection;
 
 // Function to print centered text on the Brain's screen
-void printCenter(std::string input);
+void printCenter(const char* input);
 
 // Overloaded functions to update the controller screen with PID values
 void updateController(double kP, double kI, double kD, int sel, double mag);

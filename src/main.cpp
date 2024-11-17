@@ -35,56 +35,14 @@
 #include <string>
 using namespace vex;
 
-void printCenter(std::string input)
+void printCenter(const char* input)
 {
   // Screen Size (x,y) = (480, 240)
-  int width = Brain.Screen.getStringWidth(input.c_str());
+  int width = Brain.Screen.getStringWidth(input);
   int xOffset = 240 - width/2;
   if (width <= 480){
     Brain.Screen.clearScreen();
-    Brain.Screen.printAt(xOffset, 120, input.c_str());
-  }
-}
-
-int autonSelection = 4;
-int autonCount = 7;
-void autonSelect()
-{
-  autonSelection = (autonSelection + 1)%(autonCount + 1); // loops 1 through the auton count
-  switch (autonSelection)
-  {
-  case 0:
-    Brain.Screen.clearLine(); 
-    printCenter("Right side");
-    break;
-  case 1:
-    Brain.Screen.clearLine();
-    printCenter("Red Left Auto");
-    break;
-  case 2:
-    Brain.Screen.clearLine();
-    printCenter("Blue Right Auto");
-    break;
-  case 3:
-    Brain.Screen.clearLine();
-    printCenter("Skills");
-    break;
-  case 4:
-    Brain.Screen.clearLine();
-    printCenter("AWP");
-    break;
-  case 5:
-    Brain.Screen.clearLine();
-    printCenter("Half AWP");
-    break;
-  case 6:
-    Brain.Screen.clearLine();
-    printCenter("blue Left Auto");
-    break;
-  case 7:
-    Brain.Screen.clearLine();
-    printCenter("blue Mid Auto");
-    break;
+    Brain.Screen.printAt(xOffset, 120, input);
   }
 }
 
