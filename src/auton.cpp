@@ -133,9 +133,9 @@ void blueRightAuto(int i) // i is if its inversed or not (1 = regular, -1 = inve
   drivePID(-56);
   wait(300,msec);
   inert(i*-45);
-  sintake.set(true);
+  sIntake.set(true);
   drivePID(40);
-  sintake.set(false);
+  sIntake.set(false);
   drivePID(-15);
 }
 void blueMidAuto(int i)
@@ -208,10 +208,10 @@ void redleftAuto(int i)
   drivePID(-5);
   // turn towards stack of two and lift intake
   inert(-46);
-  sintake.set(true);
+  sIntake.set(true);
   mIntake.spin(fwd, 60, pct);
   drivePID(68);
-  sintake.set(false);
+  sIntake.set(false);
   // put ring on alliance stake after
   // turning and lift life
   driveInches(-10, 50); // VALUE NEEDS TO BE TWEAKED
@@ -320,9 +320,9 @@ void AWP(int i)
   // Pick up red side one stack
   drivePID(17);
   inert(65);//turn towards ring by allinace stake
-  sintake.set(true);
+  sIntake.set(true);
   drivePID(57);
-  sintake.set(false);//grabs ring by alliance stake
+  sIntake.set(false);//grabs ring by alliance stake
   wait(200,msec);
   drivePID(1);
   sClamp.set(true);//drops goal
@@ -353,7 +353,7 @@ void AWP(int i)
   mIntake.spin(forward, 100, pct);
   inert(-152);
   // Lift intake
-  sintake.set(true);
+  sIntake.set(true);
   mIntake.spin(forward, 100, pct);
   // Lift Arm
   mLift.setVelocity(40, pct);
@@ -362,7 +362,7 @@ void AWP(int i)
   drivePID(22);
   driveInches(16, 60);
   // Drop intake on ring
-  sintake.set(false);
+  sIntake.set(false);
   drivePID(3.5);
   drivePID(-3);
   mIntake.stop();
