@@ -27,10 +27,4 @@ void setArmTop();
 // Log Drive
 double logDriveJoystick(double joystickPCT);
 
-// Odometry
-void odometry();
-void setStartingOdomValues();
-void odomKillSwitch();
-void odomDataCollection();
-
 #endif // MOVEMENT_H

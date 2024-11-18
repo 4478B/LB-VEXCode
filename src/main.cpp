@@ -12,6 +12,7 @@
 #include "movement.h"
 #include "auton.h"
 #include "vex.h"
+#include "odometry.h"
 #include <iostream>
 #include <string>
 #include <mutex>
