@@ -32,13 +32,13 @@ void pre_auton(void)
   Controller1.rumble("-"); // rumble indicates finished calibration
   Brain.Screen.clearScreen();
 
-  // vex::thread odom(odometry); // after calibrated, can start odometry
-  // vex::thread odomData(odomDataCollection);
+  vex::thread odom(odometry); // after calibrated, can start odometry
+  vex::thread odomData(odomDataCollection);
 
   AutonSelector &selector = getAutonSelector();
   selector.displayCurrentSelection();
   Brain.Screen.pressed([]()
-                       { getAutonSelector().nextSelection(); });
+                       { getAutonSelector().displayCurrentSelection(); });
 
   vex ::wait(4, sec);
 }

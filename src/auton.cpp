@@ -33,7 +33,7 @@ static const AutonRoutine ROUTINES[] = {
     {"Blue Right Auto", blueRightAuto, 1}, // Route 3
     {"Skills", skillsAuto, 1},         // Route 4
     {"AWP", AWP, 1},                   // Route 5
-    {"Half AWP", halfAWP, 1},          // Route 6
+    {"Blue 3 Ring, Ring side", halfAWP, 1},  // Route 6
     {"Blue Left Auto", rightAuto, -1}, // Route 7
     {"Blue Mid Auto", blueMidAuto, 1}  // Route 8
 };
