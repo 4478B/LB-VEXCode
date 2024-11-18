@@ -20,56 +20,62 @@ using namespace vex;
  */
 
 // Full definition of AutonRoutine struct
-struct AutonRoutine {
-    const char* displayName;
-    std::function<void(int)> routine;
-    int multiplier;
+struct AutonRoutine
+{
+  const char *displayName;
+  std::function<void(int)> routine;
+  int multiplier;
 };
 
 // Define the routines array
 static const AutonRoutine ROUTINES[] = {
-    {"Right side", rightAuto, 1},      // Route 1
-    {"Red Left Auto", halfAWP, -1},    // Route 2
-    {"Blue Right Auto", blueRightAuto, 1}, // Route 3
-    {"Skills", skillsAuto, 1},         // Route 4
-    {"AWP", AWP, 1},                   // Route 5
-    {"Blue 3 Ring, Ring side", halfAWP, 1},  // Route 6
-    {"Blue Left Auto", rightAuto, -1}, // Route 7
-    {"Blue Mid Auto", blueMidAuto, 1}  // Route 8
+    {"Right side", rightAuto, 1},           // Route 1
+    {"Red Left Auto", halfAWP, -1},         // Route 2
+    {"Blue Right Auto", blueRightAuto, 1},  // Route 3
+    {"Skills", skillsAuto, 1},              // Route 4
+    {"AWP", AWP, 1},                        // Route 5
+    {"Blue 3 Ring, Ring side", halfAWP, 1}, // Route 6
+    {"Blue Left Auto", rightAuto, -1},      // Route 7
+    {"Blue Mid Auto", blueMidAuto, 1}       // Route 8
 };
 
 // Create static instance
 static AutonSelector instance;
 
 // Constructor implementation
-AutonSelector::AutonSelector() : 
-    routines(ROUTINES),
-    currentSelection(5),  // Start with AWP (Route 5)
-    routineCount(sizeof(ROUTINES) / sizeof(ROUTINES[0]))
-{}
-
-void AutonSelector::nextSelection() {
-    currentSelection = (currentSelection % routineCount) + 1;
-    displayCurrentSelection();
+AutonSelector::AutonSelector() : routines(ROUTINES),
+                                 currentSelection(5), // Start with AWP (Route 5)
+                                 routineCount(sizeof(ROUTINES) / sizeof(ROUTINES[0]))
+{
 }
 
-void AutonSelector::displayCurrentSelection() {
-    Brain.Screen.clearLine();
-    printCenter(routines[currentSelection - 1].displayName);
+void AutonSelector::nextSelection()
+{
+  currentSelection = (currentSelection % routineCount) + 1;
+  displayCurrentSelection();
 }
 
-void AutonSelector::runSelectedAuton() {
-    const AutonRoutine& selected = routines[currentSelection - 1];
-    selected.routine(selected.multiplier);
+void AutonSelector::displayCurrentSelection()
+{
+  Brain.Screen.clearLine();
+  printCenter(routines[currentSelection - 1].displayName);
 }
 
-int AutonSelector::getCurrentSelection() const {
-    return currentSelection;
+void AutonSelector::runSelectedAuton()
+{
+  const AutonRoutine &selected = routines[currentSelection - 1];
+  selected.routine(selected.multiplier);
+}
+
+int AutonSelector::getCurrentSelection() const
+{
+  return currentSelection;
 }
 
 // Global instance getter implementation
-AutonSelector& getAutonSelector() {
-    return instance;
+AutonSelector &getAutonSelector()
+{
+  return instance;
 }
 
 //=============================================================================
@@ -77,14 +83,14 @@ AutonSelector& getAutonSelector() {
 /* Autonomous routines */
 void skillsAuto(int i)
 {
-  driveInchesClamp(-200, 40);  // VALUE NEEDS TO BE TWEAKED
+  driveInchesClamp(-200, 40); // VALUE NEEDS TO BE TWEAKED
   mIntake.spin(fwd, 100, pct);
-  wait(700,msec);
+  wait(700, msec);
   inert(-90);
-  driveInches(35,50);
+  driveInches(35, 50);
   inert(135);
   sClamp.set(true);
-  driveInches(-27,40);
+  driveInches(-27, 40);
   drivePID(25);
   inert(90);
   drivePID(130);
@@ -95,24 +101,24 @@ void skillsAuto(int i)
   drivePID(120);
   inert(-90);
   drivePID(30);
-  //drivePID(-30);
-  //inert(270);
+  // drivePID(-30);
+  // inert(270);
   /*drivePID(108);
   inert(225);
   drivePID(30);
   drivePID(-40);
   drivePID(30);
   inert(95);*/
-  driveInches(400,70);
-  driveInches(-30,50);
+  driveInches(400, 70);
+  driveInches(-30, 50);
 }
 void blueRightAuto(int i) // i is if its inversed or not (1 = regular, -1 = inversed)
 {
   // this auto is intended to score 5 rings in one goal and score one on a side stake
   // Grab Goal
-  driveInchesClamp(-1320, 50);  // VALUE NEEDS TO BE TWEAKED
+  driveInchesClamp(-1320, 50); // VALUE NEEDS TO BE TWEAKED
   // Turn towards mid ring stack
-  inert(i*-140);
+  inert(i * -140);
   mIntake.spin(forward, 100, pct); // Turn on intake
   // Pick up bottom ring
   drivePID(27);
@@ -120,19 +126,19 @@ void blueRightAuto(int i) // i is if its inversed or not (1 = regular, -1 = inve
   // Back up to avoid intaking second ring
   drivePID(-7);
   // Turn towards Alliance side one stack
-  inert(i*-42);
+  inert(i * -42);
   // waiting for ring to intake
   wait(300, msec);
   // Pick up red side one stack
   drivePID(17);
-  wait(500,msec);
-  inert(i*196); // turn towards other mid ring
-  
+  wait(500, msec);
+  inert(i * 196); // turn towards other mid ring
+
   drivePID(18.5);
-  inert(i*180);
+  inert(i * 180);
   drivePID(-56);
-  wait(300,msec);
-  inert(i*-45);
+  wait(300, msec);
+  inert(i * -45);
   sIntake.set(true);
   drivePID(40);
   sIntake.set(false);
@@ -141,32 +147,32 @@ void blueRightAuto(int i) // i is if its inversed or not (1 = regular, -1 = inve
 void blueMidAuto(int i)
 {
   // Starting position: In blue right corner, facing mobile goal
-  drivePID(-27); 
+  drivePID(-27);
   driveInchesClamp(-300, 30); // VALUE NEEDS TO BE TWEAKED
-  inert(-104*i);
+  inert(-104 * i);
   wait(500, msec);
   mIntake.spin(forward, 100, pct);
   drivePID(36);
-  wait(500, msec); 
+  wait(500, msec);
   drivePID(-27);
-  wait(500,msec);
-  inert(-55*i);
+  wait(500, msec);
+  inert(-55 * i);
   drivePID(22);
-  wait(500,msec);
+  wait(500, msec);
   drivePID(-10);
   drivePID(-30);
   sClamp.set(true);
   drivePID(14);
-  inert(35*i);
+  inert(35 * i);
   mIntake.stop();
   drivePID(30);
-  inert(125*i);
-  drivePID(60);     
+  inert(125 * i);
+  drivePID(60);
   inert(0);
-  driveInchesClamp(-1400,80);  // VALUE NEEDS TO BE TWEAKED
-  wait(300,msec);
-  inert(125*i);
-  mIntake.spin(fwd, 100,pct);
+  driveInchesClamp(-1400, 80); // VALUE NEEDS TO BE TWEAKED
+  wait(300, msec);
+  inert(125 * i);
+  mIntake.spin(fwd, 100, pct);
   drivePID(30);
 }
 void redleftAuto(int i)
@@ -174,13 +180,13 @@ void redleftAuto(int i)
   // this auto is intended to score 5 rings
   // in one goal and score one on a side stake
   // Grab Goal
-  driveInchesClamp(-1100, 80);  // VALUE NEEDS TO BE TWEAKED
+  driveInchesClamp(-1100, 80); // VALUE NEEDS TO BE TWEAKED
   // Turn on intake
   mIntake.spin(forward, 100, pct);
   // Turn towards mid ring stack
   inert(120);
 
-  Inertial.setHeading(140,deg);
+  Inertial.setHeading(140, deg);
   // Pick up bottom ring
   drivePID(25);
   wait(200, msec);
@@ -230,76 +236,49 @@ void redleftAuto(int i)
 }
 void rightAuto(int i) // inverse is blue left
 {
-  driveInchesClamp(-28,50);
-  mIntake.spin(fwd,100,pct);
+  driveInchesClamp(-28, 50);
+  mIntake.spin(fwd, 100, pct);
   wait(400, msec);
-  inert(-90*i);
+  inert(-90 * i);
   drivePID(-5);
   sClamp.set(true);
   drivePID(35);
-  wait(300,msec);
-  mIntake.stop();
-  inert(0*i);
-  driveInchesClamp(-17,30);
-  drivePID(24);
-  mIntake.spin(fwd,100,pct);
   wait(300, msec);
-  inert(100*i);
+  mIntake.stop();
+  inert(0 * i);
+  driveInchesClamp(-17, 30);
+  drivePID(24);
+  mIntake.spin(fwd, 100, pct);
+  wait(300, msec);
+  inert(100 * i);
 
   setArmTop();
-  driveInches(60,40);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  driveInches(60, 40);
 }
 void AWP(int i)
 { // starts out the same as rightAuto but then goes full field
-  driveInchesClamp(-28,50);
-  mIntake.spin(fwd,100,pct);
+  driveInchesClamp(-28, 50);
+  mIntake.spin(fwd, 100, pct);
   wait(400, msec);
   inert(-90);
   drivePID(-5);
   sClamp.set(true);
-  wait(50,msec);
+  wait(50, msec);
   drivePID(34);
-  wait(300,msec);
+  wait(300, msec);
   mIntake.stop();
   inert(0);
-  driveInchesClamp(-17,30);
+  driveInchesClamp(-17, 30);
   mIntake.spin(fwd, 100, pct);
   drivePID(9);
-  wait(300,msec);
+  wait(300, msec);
   inert(94);
   mIntake.stop();
   sClamp.set(true);
 
-
-
-
-
-
-
-
-
-
   drivePID(75);
   inert(225);
-  driveInchesClamp(-20,50);
-  
- 
+  driveInchesClamp(-20, 50);
 
   /* THIS OLD AWP CODE WAS REPLACED BEFORE DANIEL HAND COMP
   // this auto is intended to score 5 rings in one goal and score one on a side stake
@@ -335,7 +314,7 @@ void AWP(int i)
   inert(180);
   drivePID(-7);
   mIntake.spin(fwd,100,pct);//puts ring on alliance stake
-  
+
   sDoor.set(true);
   // Grab First Ring
   mIntake.spin(forward, 100, pct);
@@ -393,38 +372,37 @@ void AWP(int i)
 }
 void halfAWP(int i) // this is daniel hand redleft and blueright
 {
-  drivePID(-27); 
-  driveInchesClamp(-300, 30);  // VALUE NEEDS TO BE TWEAKED
-  wait(500,msec);
+  drivePID(-27);
+  driveInchesClamp(-300, 30); // VALUE NEEDS TO BE TWEAKED
+  wait(500, msec);
   mIntake.spin(forward, 100, pct);
   /*
   inert(-108*i);
   wait(500, msec);
-  
+
   drivePID(36);
-  wait(500, msec); 
+  wait(500, msec);
   drivePID(-27);
   wait(500,msec);
   */
-  inert(-55*i);
-  drivePID(27);//+3; nvm
-  wait(500,msec);
+  inert(-55 * i);
+  drivePID(27); //+3; nvm
+  wait(500, msec);
   drivePID(-4);
 
-  inert(-145*i);
+  inert(-145 * i);
   drivePID(20);
-  wait(500,msec);
+  wait(500, msec);
   drivePID(-20);
-  inert(-55*i);
+  inert(-55 * i);
 
-  drivePID(-11);//-3; nvm
+  drivePID(-11); //-3; nvm
   drivePID(-30);
-  setArmTop();   
-  inert(-145*i);
+  setArmTop();
+  inert(-145 * i);
   drivePID(7);
 }
 void adaptive(int i)
 {
   drivePID(-50);
-  
 }

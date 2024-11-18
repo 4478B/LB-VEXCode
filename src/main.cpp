@@ -339,6 +339,7 @@ void handleArm()
   if ((Controller1.ButtonL1.pressing() || Controller2.ButtonL1.pressing()) && pidRunning == false && armPos != 1)
   {
     {
+      Controller1.Screen.print("1");
       std::lock_guard<vex::mutex> lock(armMutex);
       pidRunning = true;   // starts the PID running
       armPos = 1;          // sets the position of the arm, stores in variable
