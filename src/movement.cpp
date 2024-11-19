@@ -9,7 +9,6 @@ const double WHEEL_RADIUS = 1.375;
 const int WHEEL_OUTPUT = 48;
 const int GEAR_INPUT = 36;
 
-
 double turnSlewStep = 6;
 
 double turnSlew(double val)
@@ -74,7 +73,8 @@ void inert(double target, double kP, double kI, double kD)
     if (((fabs(prevError) < 1.5)))
     {
       oscillation++;
-      if(oscillation > 1){
+      if (oscillation > 1)
+      {
         isComplete = true;
         allMotors.stop(hold);
         break;
@@ -84,18 +84,19 @@ void inert(double target, double kP, double kI, double kD)
   }
 }
 
-void inertClamp(double t){
+void inertClamp(double t)
+{
   inert(t, 0.499, 0.0, 0.002);
 }
 
 void drivePID(double inches, double kP, double kI, double kD, double goalThreshold)
 {
   // Function to control robot movement using PID
-  int inGoal = 0;                                            // Tracks robot's time in goal threshold
-  double currentDelta;                                       // Error between target and current position
-  double P = 0, I = 0, D = 0, totalPID;                      // PID terms
-  double pollingRate = 20;                                   // Polling rate in ms
-  double target = inches * (360 / (2 * M_PI * 1.375));       // Target position in degrees (1.375 is wheelRadius)
+  int inGoal = 0;                                      // Tracks robot's time in goal threshold
+  double currentDelta;                                 // Error between target and current position
+  double P = 0, I = 0, D = 0, totalPID;                // PID terms
+  double pollingRate = 20;                             // Polling rate in ms
+  double target = inches * (360 / (2 * M_PI * 1.375)); // Target position in degrees (1.375 is wheelRadius)
 
   inches *= WHEEL_OUTPUT / GEAR_INPUT; // Account for gear ratio
 
@@ -103,19 +104,21 @@ void drivePID(double inches, double kP, double kI, double kD, double goalThresho
   double integralSum = 0;        // Cumulative error for integral term
 
   double startTime = Brain.Timer.time();
-  double timeout = 3000; // max time before PID times out
-  double goalsNeeded = (fabs(inches)/5) * pollingRate; // makes time spent in goal proportional to distance
-  if(goalsNeeded == 0){ // sets bounds (max & min) for goals needed to reach goal
+  double timeout = 3000;                                 // max time before PID times out
+  double goalsNeeded = (fabs(inches) / 5) * pollingRate; // makes time spent in goal proportional to distance
+  if (goalsNeeded == 0)
+  { // sets bounds (max & min) for goals needed to reach goal
     goalsNeeded = 1;
   }
-  else if(goalsNeeded > 5){
+  else if (goalsNeeded > 5)
+  {
     goalsNeeded = 5;
-  } 
+  }
 
   // Reset motor encoder value to 0
   allMotors.setPosition(0, degrees);
 
-  while (inGoal < goalsNeeded)  // CHECK IF IT SHOULD BE A < or <=
+  while (inGoal < goalsNeeded) // CHECK IF IT SHOULD BE A < or <=
   {
     // Main PID loop; runs until target is reached
     // Read motor position (you can average left and right motor values for straight driving)
@@ -145,11 +148,13 @@ void drivePID(double inches, double kP, double kI, double kD, double goalThresho
     {
       inGoal++;
     }
-    else{
+    else
+    {
       inGoal = 0;
     }
     // Check if should timeout
-    if((Brain.Timer.time() - startTime) >= timeout){
+    if ((Brain.Timer.time() - startTime) >= timeout)
+    {
       break;
     }
 
@@ -256,11 +261,11 @@ void tunerDrivePID(double inches, double kP, double kI, double kD, int ID)
 
 void driveInches(double inches, int veloc, bool clamping)
 {
-  
+
   // adjusted inches based on gear ratios
   double adjustedInches = inches * (WHEEL_OUTPUT / GEAR_INPUT);
 
-  //conversion from inches to degrees
+  // conversion from inches to degrees
   double degrs = (adjustedInches * 180) / (WHEEL_RADIUS * M_PI);
 
   double average = 0;
@@ -273,27 +278,33 @@ void driveInches(double inches, int veloc, bool clamping)
   double slowdownThreshold = (degrs >= 0) ? 250 : 150;
 
   while ((moveDirection == forward && average < degrs) ||
-         (moveDirection == reverse && average > degrs)) {
-      // Calculate average position
-      average = (mBackLeft.position(degrees) + 
-                mBackRight.position(degrees) + 
-                mFrontLeft.position(degrees) + 
-                mMidLeft.position(degrees) + 
-                mMidRight.position(degrees) + 
-                mFrontRight.position(degrees)) / 6;
+         (moveDirection == reverse && average > degrs))
+  {
+    // Calculate average position
+    average = (mBackLeft.position(degrees) +
+               mBackRight.position(degrees) +
+               mFrontLeft.position(degrees) +
+               mMidLeft.position(degrees) +
+               mMidRight.position(degrees) +
+               mFrontRight.position(degrees)) /
+              6;
 
-      // Spin motors in appropriate direction
-      allMotors.spin(moveDirection, veloc, pct);
+    // Spin motors in appropriate direction
+    allMotors.spin(moveDirection, veloc, pct);
 
-      // Handle slowdown and clamp
-      double distanceRemaining = fabs(degrs - average);
-      if (veloc > 15 && distanceRemaining < slowdownThreshold) {
-          veloc = veloc * (distanceRemaining / targetDegrees);
-          // Set clamp opposite to current value
-          if(clamping){sClamp.set(!sClamp.value());}
+    // Handle slowdown and clamp
+    double distanceRemaining = fabs(degrs - average);
+    if (veloc > 15 && distanceRemaining < slowdownThreshold)
+    {
+      veloc = veloc * (distanceRemaining / targetDegrees);
+      // Set clamp opposite to current value
+      if (clamping)
+      {
+        sClamp.set(!sClamp.value());
       }
+    }
 
-      vex::wait(10, msec);
+    vex::wait(10, msec);
   }
 }
 
@@ -387,22 +398,22 @@ void tunePID()
 
 void GraphPID(double rangeP, double rangeD, double guessP, double guessD, int sqrtTests)
 {
-  double currentP = guessP - rangeP;  // Values representing current search boundaries
+  double currentP = guessP - rangeP; // Values representing current search boundaries
   double currentD = guessD - rangeD;
-  double minP = currentP;             // Search starts at the minimum, goes to maximum
+  double minP = currentP; // Search starts at the minimum, goes to maximum
   double deltaP = rangeP / sqrtTests;
   double deltaD = rangeD / sqrtTests;
   int maxID = sqrtTests ^ 2 - 1;
-  int ID = 0;                    // IDs represent individual tests to make them replicable
+  int ID = 0; // IDs represent individual tests to make them replicable
   std::cout << "What is current ID (0 if starting): ";
-  std::cin >> ID;            // retrieves user input so it can be run in mutliple sessions
+  std::cin >> ID; // retrieves user input so it can be run in mutliple sessions
   std::cout << std::endl;
   while (ID <= maxID)
   {
 
     tunerDrivePID(100, currentP, 0, currentD, ID); // Custom PID with more logging
 
-    if (ID % 10 == 9)     // This is the loop that creates the gridlike pattern
+    if (ID % 10 == 9) // This is the loop that creates the gridlike pattern
     {
       currentD += deltaD;
       currentP = minP;
@@ -411,71 +422,76 @@ void GraphPID(double rangeP, double rangeD, double guessP, double guessD, int sq
     {
       currentP += deltaP;
     }
-    ID++;         // assigns new ID so next test can start
+    ID++; // assigns new ID so next test can start
   }
 }
 
-void setArm(int targetDeg) {
+void setArm(int targetDeg)
+{
 
+  Controller1.Screen.print("2");
   // PID Constants
   const double kP = 1500;
   const double kI = 0;
   const double kD = 0.01;
-  
+
   // PID Variables
   double P = 0, I = 0, D = 0, totalPID;
   double currentDelta, previousDelta = 0;
   double integralSum = 0;
   int goalMet = 0;
 
-
   // Position tracking variables
   double currentPosition;
   double error;
 
   double startTime = Brain.Timer.time();
-  double timeout = 200; 
+  double timeout = 200;
   double timeElapsed;
   // Reset motor encoder
   mLift.setPosition(0, degrees);
 
-
-  while (goalMet <= 1 && timeElapsed<=timeout) {
+  while (goalMet <= 1 && timeElapsed <= timeout)
+  {
     currentPosition = Rotation.angle(deg);
     error = targetDeg - currentPosition;
 
     // Normalize error to [-180, 180] range
-    if(error > 180) {
+    if (error > 180)
+    {
       error -= 360;
     }
-    else if(error < -180) {
+    else if (error < -180)
+    {
       error += 360;
     }
 
     currentDelta = error;
-    
+
     // PID calculations
     P = (kP / 1000) * currentDelta;
     integralSum += currentDelta;
     I = kI * integralSum;
     D = (kD / 20) * (currentDelta - previousDelta);
-    
+
     totalPID = P + I + D;
 
     // Apply motor movement
     armMotors.spin(forward, totalPID, percent);
-    
-    if (fabs(currentDelta) < 2) {
+
+    if (fabs(currentDelta) < 2)
+    {
       goalMet++;
     }
-    
+
     previousDelta = currentDelta;
 
     timeElapsed = Brain.Timer.time() - startTime;
-    
+
     wait(20, msec);
   }
 
+  Controller1.Screen.print("3");
   // Stop motors
   armMotors.stop(hold);
 }
@@ -485,18 +501,18 @@ void setArmBottom() { setArm(0); }
 void setArmMid() { setArm(25); }
 void setArmTop() { setArm(130); }
 
-
-const double SMOOTHING_DENOMINATOR = 31.62278;  // Used to normalize the exponential curve
+const double SMOOTHING_DENOMINATOR = 31.62278; // Used to normalize the exponential curve
 const double EXPONENTIAL_POWER = 1.75;         // Controls how aggressive the curve is
 // Helper function that makes joystick input more precise for small movements
 // while maintaining full power at maximum joystick
-double logDriveJoystick(double joystickPCT) {
-    // Get the absolute value for calculation
-    double magnitude = fabs(joystickPCT);
-    
-    // Calculate the smoothed value
-    double smoothedValue = pow(magnitude, EXPONENTIAL_POWER) / SMOOTHING_DENOMINATOR;
-    
-    // Restore the original sign (positive or negative)
-    return joystickPCT >= 0 ? smoothedValue : -smoothedValue;
+double logDriveJoystick(double joystickPCT)
+{
+  // Get the absolute value for calculation
+  double magnitude = fabs(joystickPCT);
+
+  // Calculate the smoothed value
+  double smoothedValue = pow(magnitude, EXPONENTIAL_POWER) / SMOOTHING_DENOMINATOR;
+
+  // Restore the original sign (positive or negative)
+  return joystickPCT >= 0 ? smoothedValue : -smoothedValue;
 }
