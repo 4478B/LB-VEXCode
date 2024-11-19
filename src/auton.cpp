@@ -28,13 +28,13 @@ struct AutonRoutine {
 
 // Define the routines array
 static const AutonRoutine ROUTINES[] = {
-    {"Right side", rightAuto, 1},      // Route 1
-    {"Red Left Auto", halfAWP, -1},    // Route 2
+    {"Red Goal Side Two Top Rings", rightAuto, 1},      // Route 1
+    {"Red 3 Ring, Ring side", halfAWP, -1},    // Route 2
     {"Blue Right Auto", blueRightAuto, 1}, // Route 3
     {"Skills", skillsAuto, 1},         // Route 4
-    {"AWP", AWP, 1},                   // Route 5
+    {"WIP(Full Field AWP) ", AWP, 1},                   // Route 5
     {"Blue 3 Ring, Ring side", halfAWP, 1},  // Route 6
-    {"Blue Left Auto", rightAuto, -1}, // Route 7
+    {"Blue Goal Side Two Top Rings", rightAuto, -1}, // Route 7
     {"Blue Mid Auto", blueMidAuto, 1}  // Route 8
 };
 
