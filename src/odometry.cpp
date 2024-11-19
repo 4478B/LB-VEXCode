@@ -7,12 +7,13 @@
 using namespace vex;
 
 // constants used in functions
-const double WHEEL_RADIUS = 1.375;
-const int WHEEL_OUTPUT = 48;
-const int GEAR_INPUT = 36;
+const double WHEEL_RADIUS = 1.375; // Size of wheels
 
-// distance between right wheel and tracking center [inches?]
-const double rDist = 5;
+const int GEAR_INPUT = 36; // Gear size of motor input
+const int WHEEL_OUTPUT = 48; // Gear size of wheel output
+
+const double LEFT_DIST = 5; // distance between left wheel and tracking center [inches]
+const double RIGHT_DIST = 5; // distance between right wheel and tracking center [inches]
 
 // initial angle robot starts at (specified in odomSelector) [radians]
 double initTheta = 0;
@@ -82,7 +83,7 @@ void odometry() {
       deltaLocal = deltaR;
     } else {
       // Otherwise, use law of sines to solve for movement
-      deltaLocal = 2 * ((deltaR / deltaTheta) - rDist) * sin(deltaTheta / 2.0);
+      deltaLocal = 2 * ((deltaR / deltaTheta) - RIGHT_DIST) * sin(deltaTheta / 2.0);
     }
 
     // Calculates average angle of theta in arc (loop) [radians]
