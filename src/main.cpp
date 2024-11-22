@@ -38,7 +38,7 @@ void pre_auton(void)
   AutonSelector &selector = getAutonSelector();
   selector.displayCurrentSelection();
   Brain.Screen.pressed([]()
-                       { getAutonSelector().displayCurrentSelection(); });
+                       { getAutonSelector().nextSelection(); });
 
   vex ::wait(4, sec);
 }
