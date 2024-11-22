@@ -19,10 +19,11 @@ motor mLift2 = motor(PORT4, ratio18_1, false);
 distance ringCheck = distance(PORT17);
 inertial Inertial = inertial(PORT20);
 rotation Rotation = rotation(PORT2);
+optical colorSens = optical(PORT19);
 
 // Motor group definitions
-motor_group leftMotors = motor_group(mBackLeft, mMidLeft, mFrontLeft); // group of all left side drive train motors
-motor_group rightMotors = motor_group(mBackRight, mMidRight, mFrontRight); // group of all right side drive train motors
+motor_group leftMotors = motor_group(mBackLeft, mMidLeft, mFrontLeft);                                    // group of all left side drive train motors
+motor_group rightMotors = motor_group(mBackRight, mMidRight, mFrontRight);                                // group of all right side drive train motors
 motor_group allMotors = motor_group(mBackLeft, mMidLeft, mFrontLeft, mBackRight, mMidRight, mFrontRight); // group of all drive train motors
 motor_group armMotors = motor_group(mLift, mLift2);
 

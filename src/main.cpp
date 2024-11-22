@@ -32,8 +32,8 @@ void pre_auton(void)
   Controller1.rumble("-"); // rumble indicates finished calibration
   Brain.Screen.clearScreen();
 
-  vex::thread odom(odometry); // after calibrated, can start odometry
-  vex::thread odomData(odomDataCollection);
+  // vex::thread odom(odometry); // after calibrated, can start odometry
+  // vex::thread odomData(odomDataCollection);
 
   AutonSelector &selector = getAutonSelector();
   selector.displayCurrentSelection();
@@ -43,18 +43,23 @@ void pre_auton(void)
   vex ::wait(4, sec);
 }
 
+vex::thread intakeThread;
+
 void autonomous(void)
 {
-  // Calibrates motor encoders to reduce drift
-  allMotors.setPosition(0, deg);
-  Rotation.resetPosition();
-  armMotors.setPosition(0, deg);
+  // intakeThread = vex::thread(colorSortRed);
+  colorSortRed();
+  /*
+    // Calibrates motor encoders to reduce drift
+    allMotors.setPosition(0, deg);
+    Rotation.resetPosition();
+    armMotors.setPosition(0, deg);
 
-  // Performs selected autonomous route
-  getAutonSelector().runSelectedAuton();
+    // Performs selected autonomous route
+    getAutonSelector().runSelectedAuton();
 
-  // Stops motors to prevent crossing field
-  allMotors.stop();
+    // Stops motors to prevent crossing field
+    allMotors.stop();*/
 }
 
 bool clamp = false;
@@ -336,10 +341,9 @@ void handleArmOld()
 
 void handleArm()
 {
-  if ((Controller1.ButtonL1.pressing() || Controller2.ButtonL1.pressing()) && pidRunning == false && armPos != 1)
+  if ((Controller1.ButtonL1.pressing() || Controller2.ButtonL1.pressing()) && pidRunning == false && armPos != 1 && pidThread.joinable())
   {
     {
-      Controller1.Screen.print("1");
       std::lock_guard<vex::mutex> lock(armMutex);
       pidRunning = true;   // starts the PID running
       armPos = 1;          // sets the position of the arm, stores in variable
@@ -350,7 +354,7 @@ void handleArm()
       pidThread.join(); // Ensure the previous thread is finished
     pidThread = vex::thread(setArmBottom);
   }
-  else if ((Controller1.ButtonL2.pressing() || Controller2.ButtonL2.pressing()) && pidRunning == false && armPos != 2)
+  else if ((Controller1.ButtonL2.pressing() || Controller2.ButtonL2.pressing()) && pidRunning == false && armPos != 2 && pidThread.joinable())
   { // cannot call the same pos twice
     {
       std::lock_guard<vex::mutex> lock(armMutex);
@@ -363,7 +367,7 @@ void handleArm()
       pidThread.join(); // Ensure the previous thread is finished
     pidThread = vex::thread(setArmMid);
   }
-  else if ((Controller1.ButtonLeft.pressing() || Controller2.ButtonLeft.pressing()) && pidRunning == false && armPos != 3)
+  else if ((Controller1.ButtonLeft.pressing() || Controller2.ButtonLeft.pressing()) && pidRunning == false && armPos != 3 && pidThread.joinable())
   {
     {
       std::lock_guard<vex::mutex> lock(armMutex);
@@ -401,7 +405,7 @@ void usercontrol(void)
     // handleMacro();
     handleIntake();
     handleClamp();
-    handleArm();
+    handleArmOld();
 
     vex ::wait(20, msec);
   }

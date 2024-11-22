@@ -373,7 +373,7 @@ void AWP(int i)
 void halfAWP(int i) // this is daniel hand redleft and blueright
 {
   drivePID(-27);
-  driveInchesClamp(-300, 30); // VALUE NEEDS TO BE TWEAKED
+  driveInchesClamp(-7, 30); // VALUE NEEDS TO BE TWEAKED
   wait(500, msec);
   mIntake.spin(forward, 100, pct);
   /*
@@ -393,11 +393,19 @@ void halfAWP(int i) // this is daniel hand redleft and blueright
   inert(-145 * i);
   drivePID(20);
   wait(500, msec);
-  drivePID(-20);
+
+  drivePID(-10);
+  inert(-110 * i);
+  driveInches(11, 30);
+  wait(500, msec);
+  drivePID(-6);
+  inert(-145 * i);
+
+  drivePID(-15);
   inert(-55 * i);
 
   drivePID(-11); //-3; nvm
-  drivePID(-30);
+  drivePID(-20);
   setArmTop();
   inert(-145 * i);
   drivePID(7);

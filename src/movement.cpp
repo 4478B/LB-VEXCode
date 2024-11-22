@@ -429,7 +429,6 @@ void GraphPID(double rangeP, double rangeD, double guessP, double guessD, int sq
 void setArm(int targetDeg)
 {
 
-  Controller1.Screen.print("2");
   // PID Constants
   const double kP = 1500;
   const double kI = 0;
@@ -445,13 +444,14 @@ void setArm(int targetDeg)
   double currentPosition;
   double error;
 
-  double startTime = Brain.Timer.time();
-  double timeout = 200;
-  double timeElapsed;
+  // double startTime = Brain.Timer.time();
+  // double timeout = 200;
+  // double timeElapsed;
+
   // Reset motor encoder
   mLift.setPosition(0, degrees);
 
-  while (goalMet <= 1 && timeElapsed <= timeout)
+  while (goalMet <= 1)
   {
     currentPosition = Rotation.angle(deg);
     error = targetDeg - currentPosition;
@@ -486,16 +486,42 @@ void setArm(int targetDeg)
 
     previousDelta = currentDelta;
 
-    timeElapsed = Brain.Timer.time() - startTime;
+    // timeElapsed = Brain.Timer.time() - startTime;
 
     wait(20, msec);
   }
 
-  Controller1.Screen.print("3");
   // Stop motors
   armMotors.stop(hold);
 }
 
+void colorSortRed() // 1 is for red, 2 is for blue
+{
+  mIntake.setVelocity(100, pct);
+  colorSens.setLightPower(100, percent);
+  colorSens.setLight(ledState::on);
+  int armPos = 1;
+  while (true)
+  {
+    if (armPos == 2)
+    {
+      setArm(0);
+      armPos = 1;
+    }
+    mIntake.spin(fwd, 100, pct);
+    if ((colorSens.hue() > 330 || colorSens.hue() < 45) && colorSens.isNearObject())
+    {
+      // mIntake.spinFor(fwd, 1000, deg);
+      wait(10, msec);
+      // setArm(30);
+      armPos = 2;
+      mIntake.stop(hold);
+      mIntake.spin(reverse, 100, pct);
+      wait(50, msec);
+    }
+    wait(10, msec);
+  }
+}
 // aliases for specific positions
 void setArmBottom() { setArm(0); }
 void setArmMid() { setArm(25); }
