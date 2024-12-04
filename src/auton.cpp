@@ -31,12 +31,12 @@ struct AutonRoutine
 static const AutonRoutine ROUTINES[] = {
     {"Red Goal Side Two Top Rings", rightAuto, 1},      // Route 1
     {"Red 3 Ring, Ring side", halfAWP, -1},    // Route 2
-    {"Blue Right Auto", blueRightAuto, 1}, // Route 3
+    {"Elim Blue 4 Ring, Ring Side ", AWP, 1}, // Route 3
     {"Skills", skillsAuto, 1},         // Route 4
-    {"WIP(Full Field AWP) ", AWP, 1},                   // Route 5
+    {"Elim Red 4 Ring, Ring Side ", AWP, -1},                   // Route 5
     {"Blue 3 Ring, Ring side", halfAWP, 1},  // Route 6
     {"Blue Goal Side Two Top Rings", rightAuto, -1}, // Route 7
-    {"Blue Mid Auto", blueMidAuto, 1}  // Route 8
+    {"Red AWP Goal Side, Full Field, 3 Ring", blueMidAuto, 1}  // Route 8
 };
 
 // Create static instance
@@ -83,7 +83,7 @@ AutonSelector &getAutonSelector()
 /* Autonomous routines */
 void skillsAuto(int i)
 {
-  driveInchesClamp(-200, 40); // VALUE NEEDS TO BE TWEAKED
+  driveInchesClamp(-7, 40); // VALUE NEEDS TO BE TWEAKED
   mIntake.spin(fwd, 100, pct);
   wait(700, msec);
   inert(-90);
@@ -99,7 +99,7 @@ void skillsAuto(int i)
   drivePID(-30);
   inert(180);
   drivePID(120);
-  inert(-90);
+  inert(-100);
   drivePID(30);
   // drivePID(-30);
   // inert(270);
@@ -109,8 +109,10 @@ void skillsAuto(int i)
   drivePID(-40);
   drivePID(30);
   inert(95);*/
-  driveInches(400, 70);
-  driveInches(-30, 50);
+  driveInches(136, 70);
+  driveInches(-15, 50);
+  inert(-240);
+  driveInches(140, 70);
 }
 void blueRightAuto(int i) // i is if its inversed or not (1 = regular, -1 = inversed)
 {
@@ -146,7 +148,36 @@ void blueRightAuto(int i) // i is if its inversed or not (1 = regular, -1 = inve
 }
 void blueMidAuto(int i)
 {
-  // Starting position: In blue right corner, facing mobile goal
+   driveInchesClamp(-35, 50);
+  mIntake.spin(fwd, 100, pct);
+  wait(400, msec);
+  inert(-63 * i);
+  drivePID(-5);
+  sClamp.set(true);
+    driveInches(30, 80);
+
+  wait(300, msec);
+  mIntake.stop();
+  inert(29 * i);
+  driveInchesClamp(-23, 40);
+  drivePID(26);
+  mIntake.spin(fwd, 100, pct);
+  wait(300, msec);
+
+  drivePID(15);
+
+  inert(100 * i);
+
+
+  driveInches(60,70); //was 60 before
+   mIntake.stop();
+wait(200,msec);
+   inert(158 * i);
+   driveInches(55,70); //was 60 before
+   mIntake.spin(fwd, 100, pct);
+   driveInches(25,50);
+  
+ /* // Starting position: In blue right corner, facing mobile goal
   drivePID(-27);
   driveInchesClamp(-300, 30); // VALUE NEEDS TO BE TWEAKED
   inert(-104 * i);
@@ -173,7 +204,7 @@ void blueMidAuto(int i)
   wait(300, msec);
   inert(125 * i);
   mIntake.spin(fwd, 100, pct);
-  drivePID(30);
+  drivePID(30);*/
 }
 void redleftAuto(int i)
 {
@@ -239,136 +270,61 @@ void rightAuto(int i) // inverse is blue left
   driveInchesClamp(-28, 50);
   mIntake.spin(fwd, 100, pct);
   wait(400, msec);
-  inert(-90 * i);
-  drivePID(-5);
+  inert(-135 * i);
+  drivePID(-10);
   sClamp.set(true);
-  drivePID(35);
+  drivePID(10);
+  inert(-90 *i);
+  drivePID(31);
   wait(300, msec);
   mIntake.stop();
   inert(0 * i);
-  driveInchesClamp(-17, 30);
+  driveInchesClamp(-26, 30);
   drivePID(24);
   mIntake.spin(fwd, 100, pct);
   wait(300, msec);
-  inert(100 * i);
+
+  drivePID(15);
+
+  inert(120 * i);
 
   setArmTop();
-  driveInches(60, 40);
+  driveInches(60,40); //was 60 before
 }
 void AWP(int i)
-{ // starts out the same as rightAuto but then goes full field
-  driveInchesClamp(-28, 50);
-  mIntake.spin(fwd, 100, pct);
-  wait(400, msec);
-  inert(-90);
-  drivePID(-5);
-  sClamp.set(true);
-  wait(50, msec);
-  drivePID(34);
-  wait(300, msec);
-  mIntake.stop();
-  inert(0);
-  driveInchesClamp(-17, 30);
-  mIntake.spin(fwd, 100, pct);
-  drivePID(9);
-  wait(300, msec);
-  inert(94);
-  mIntake.stop();
-  sClamp.set(true);
-
-  drivePID(75);
-  inert(225);
-  driveInchesClamp(-20, 50);
-
-  /* THIS OLD AWP CODE WAS REPLACED BEFORE DANIEL HAND COMP
-  // this auto is intended to score 5 rings in one goal and score one on a side stake
-  // Grab Goal
-  drivePIDClamp(-1250, 80);
-  // Turn towards mid ring stack
-  inert(-140);
-  mIntake.spin(forward, 100, pct); // Turn on intake
-  // Pick up bottom ring
-  drivePID(24);
-  wait(200, msec);
-  // Back up to avoid intaking second ring
-  drivePID(-5);
-  // Turn towards Alliance side one stack
-  inert(-42);
-  // waiting for ring to intake
-  wait(300, msec);
-  // Pick up red side one stack
-  drivePID(17);
-  inert(65);//turn towards ring by allinace stake
-  sIntake.set(true);
-  drivePID(57);
-  sIntake.set(false);//grabs ring by alliance stake
-  wait(200,msec);
-  drivePID(1);
-  sClamp.set(true);//drops goal
-  drivePID(-15);//backs up so blue isnt picked up
-  mIntake.stop();
-  inert(0);
-  drivePID(30);
-  inert(90);
-  drivePID(24.5);//knocks away red ring
-  inert(180);
-  drivePID(-7);
-  mIntake.spin(fwd,100,pct);//puts ring on alliance stake
-
-  sDoor.set(true);
-  // Grab First Ring
-  mIntake.spin(forward, 100, pct);
-  drivePID(50);
-  wait(600, msec);
-  mIntake.stop();
-  // Line up to Grab Goal
-  inert(65);
-  // Drive up to goal
-  driveInchesClamp(-18, 50);
-  // Grab Goal
-  sClamp.set(false);
-  wait(150, msec);
-  // Turn to Center Ring Stack and Start Intaking
-  mIntake.spin(forward, 100, pct);
-  inert(-152);
-  // Lift intake
-  sIntake.set(true);
-  mIntake.spin(forward, 100, pct);
-  // Lift Arm
-  mLift.setVelocity(40, pct);
-  mLift.spinFor(reverse, 260, degrees, false);
-  // Drive over ring stack
-  drivePID(22);
-  driveInches(16, 60);
-  // Drop intake on ring
-  sIntake.set(false);
-  drivePID(3.5);
-  drivePID(-3);
-  mIntake.stop();
-  // Line up to wall stake
-  inert(-213);
-  // Put arm on wall stake
-  drivePID(11.5);
-  // Push ring onto stake
-  mLift.spinFor(forward, 230, degrees);
-  mLift.stop(coast);
+{
+  drivePID(-27);
+  driveInchesClamp(-7, 30); // VALUE NEEDS TO BE TWEAKED
   wait(500, msec);
-  // intake ring
   mIntake.spin(forward, 100, pct);
-  // Drive back off wall stake
-  drivePID(-15.8);
-  // Drop goal out of the way
-  inert(-115);
-  sClamp.set(true);
-  // Line up to grab second goal
-  inert(-260);
-  driveInchesClamp(-28.5, 50);
-  inert(-115);
-  drivePID(23);
-  inert(45);
+  /*
+  inert(-108*i);
+  wait(500, msec);
 
-  drivePID(39);
+  drivePID(36);
+  wait(500, msec);
+  drivePID(-27);
+  wait(500,msec);
   */
+  inert(-55 * i);
+  drivePID(27); //+3; nvm
+  wait(500, msec);
+  drivePID(-4);
+
+  inert(-145 * i);
+  driveInches(12.9,30);
+  wait(500, msec);
+
+  drivePID(-25);
+  inert(-123 * i);
+  drivePID(10);
+  driveInches(5.4, 30);
+  wait(1000, msec);
+  drivePID(-40);
+  inert(-73 * i);
+  drivePID(-130);
+  
+
 }
 void halfAWP(int i) // this is daniel hand redleft and blueright
 {
@@ -391,21 +347,23 @@ void halfAWP(int i) // this is daniel hand redleft and blueright
   drivePID(-4);
 
   inert(-145 * i);
-  drivePID(20);
+  driveInches(12.9,30);
   wait(500, msec);
 
-  drivePID(-10);
-  inert(-110 * i);
-  driveInches(11, 30);
-  wait(500, msec);
+  drivePID(-25);
+  inert(-123 * i);
+  drivePID(10);
+  driveInches(5.4, 30);
+
+  wait(1000, msec);
   drivePID(-6);
   inert(-145 * i);
 
-  drivePID(-15);
+  drivePID(-8);
   inert(-55 * i);
 
   drivePID(-11); //-3; nvm
-  drivePID(-20);
+  drivePID(-22);
   setArmTop();
   inert(-145 * i);
   drivePID(7);

@@ -48,8 +48,8 @@ vex::thread intakeThread;
 void autonomous(void)
 {
   // intakeThread = vex::thread(colorSortRed);
-  colorSortRed();
-  /*
+  // colorSortRed();
+  
     // Calibrates motor encoders to reduce drift
     allMotors.setPosition(0, deg);
     Rotation.resetPosition();
@@ -59,7 +59,7 @@ void autonomous(void)
     getAutonSelector().runSelectedAuton();
 
     // Stops motors to prevent crossing field
-    allMotors.stop();*/
+    allMotors.stop();
 }
 
 bool clamp = false;
@@ -192,7 +192,7 @@ void handleArmOld()
   { // cannot call the same pos twice
     pidRunning = true;
     armPos = 2;
-    targetDegInpRot = 25; // rotation sensor value
+    targetDegInpRot = 27; // rotation sensor value
     targetDegInp = 65;    // tune according to motor encoder values, could be negative idk
     // Event2(setArmMid);
   }
