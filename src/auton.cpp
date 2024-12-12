@@ -98,7 +98,7 @@ void skillsAuto(int i)
   drivePID(30);
   drivePID(-30);
   inert(180);
-  drivePID(120);
+  drivePID(126);
   inert(-100);
   drivePID(30);
   // drivePID(-30);
@@ -111,7 +111,7 @@ void skillsAuto(int i)
   inert(95);*/
   driveInches(136, 70);
   driveInches(-15, 50);
-  inert(-240);
+  inert(-260);
   driveInches(140, 70);
 }
 void blueRightAuto(int i) // i is if its inversed or not (1 = regular, -1 = inversed)
@@ -313,16 +313,36 @@ void AWP(int i)
 
   inert(-145 * i);
   driveInches(12.9,30);
+  //doinker.set(true);
   wait(500, msec);
-
+  //doinker.set(false);
   drivePID(-25);
   inert(-123 * i);
   drivePID(10);
-  driveInches(5.4, 30);
+  driveInches(6.4, 30);
+  //doinker.set(true);
   wait(1000, msec);
-  drivePID(-40);
-  inert(-73 * i);
-  drivePID(-130);
+  //doinker.set(false);
+  drivePID(-48);
+  inert(120 * i);
+  
+  /*
+  wait(500,msec);
+  mIntake.stop();
+  drivePID(80);*/
+
+  setArmTop();
+  drivePID(47);
+  mIntake.spin(fwd,50,pct);
+  setArmBottom();
+  wait(300,msec);
+  mIntake.stop();
+  wait(200,msec);
+  drivePID(-10);
+  mIntake.spin(fwd,100,pct);
+  inert(-60*i);
+
+  //drivePID(-120);
   
 
 }
@@ -363,7 +383,7 @@ void halfAWP(int i) // this is daniel hand redleft and blueright
   inert(-55 * i);
 
   drivePID(-11); //-3; nvm
-  drivePID(-22);
+  drivePID(-26);
   setArmTop();
   inert(-145 * i);
   drivePID(7);

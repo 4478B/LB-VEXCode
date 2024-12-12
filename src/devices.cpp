@@ -18,7 +18,7 @@ motor mLift = motor(PORT3, ratio18_1, true);
 motor mLift2 = motor(PORT4, ratio18_1, false);
 distance ringCheck = distance(PORT17);
 inertial Inertial = inertial(PORT20);
-rotation Rotation = rotation(PORT2);
+rotation Rotation = rotation(PORT11);
 optical colorSens = optical(PORT19);
 
 // Motor group definitions
@@ -29,6 +29,8 @@ motor_group armMotors = motor_group(mLift, mLift2);
 
 // Digital-out device definitions
 digital_out sClamp = digital_out(Brain.ThreeWirePort.B);
+digital_out doinker = digital_out(Brain.ThreeWirePort.C);
+
 digital_out sDoor = digital_out(Brain.ThreeWirePort.F);
 digital_out sIntake = digital_out(Brain.ThreeWirePort.D);
 

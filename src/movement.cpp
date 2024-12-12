@@ -524,11 +524,11 @@ void colorSortRed() // 1 is for red, 2 is for blue
 }
 // aliases for specific positions
 void setArmBottom() { setArm(0); }
-void setArmMid() { setArm(25); }
-void setArmTop() { setArm(130); }
+void setArmMid() { setArm(37); }
+void setArmTop() { setArm(134); }
 
-const double SMOOTHING_DENOMINATOR = 31.62278; // Used to normalize the exponential curve
-const double EXPONENTIAL_POWER = 1.75;         // Controls how aggressive the curve is
+const double SMOOTHING_DENOMINATOR = 100; // Used to normalize the exponential curve
+const double EXPONENTIAL_POWER = 2;         // Controls how aggressive the curve is
 // Helper function that makes joystick input more precise for small movements
 // while maintaining full power at maximum joystick
 double logDriveJoystick(double joystickPCT)
