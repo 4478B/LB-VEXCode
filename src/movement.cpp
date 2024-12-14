@@ -526,6 +526,7 @@ void colorSortRed() // 1 is for red, 2 is for blue
 void setArmBottom() { setArm(0); }
 void setArmMid() { setArm(37); }
 void setArmTop() { setArm(134); }
+void setArmAlliance() { setArm(205); }
 
 const double SMOOTHING_DENOMINATOR = 100; // Used to normalize the exponential curve
 const double EXPONENTIAL_POWER = 2;         // Controls how aggressive the curve is

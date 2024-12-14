@@ -203,8 +203,8 @@ void handleArmOld()
   { // cannot call the same pos twice
     pidRunning = true;
     armPos = 2;
-    targetDegInpRot = 32.5; // rotation sensor value
-    targetDegInp = 65;      // tune according to motor encoder values, could be negative idk
+    targetDegInpRot = 37; // rotation sensor value
+    targetDegInp = 65;    // tune according to motor encoder values, could be negative idk
     // Event2(setArmMid);
   }
   else if ((Controller1.ButtonDown.pressing() || Controller2.ButtonLeft.pressing()) && pidRunning == false)
@@ -216,8 +216,18 @@ void handleArmOld()
     // Event3(setArmTop);
     // tune according to motor encoder values, could be negative idk
   }
-  
-  if(Controller1.ButtonRight.pressing()){
+  else if ((Controller1.ButtonRight.pressing() || Controller2.ButtonLeft.pressing()) && pidRunning == false)
+  {
+    pidRunning = true;
+    armPos = 3;
+    targetDegInpRot = 205;
+    targetDegInp = 220;
+    // Event3(setArmTop);
+    // tune according to motor encoder values, could be negative idk
+  }
+
+  if (Controller1.ButtonUp.pressing())
+  {
     pidRunning = false;
     goalMet++;
     definedVar = false;
