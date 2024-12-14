@@ -203,7 +203,7 @@ void handleArmOld()
   { // cannot call the same pos twice
     pidRunning = true;
     armPos = 2;
-    targetDegInpRot = 37; // rotation sensor value
+    targetDegInpRot = 34; // rotation sensor value
     targetDegInp = 65;    // tune according to motor encoder values, could be negative idk
     // Event2(setArmMid);
   }
@@ -225,8 +225,7 @@ void handleArmOld()
     // Event3(setArmTop);
     // tune according to motor encoder values, could be negative idk
   }
-
-  if (Controller1.ButtonUp.pressing())
+  else if (Controller1.ButtonUp.pressing())
   {
     pidRunning = false;
     goalMet++;
@@ -289,11 +288,11 @@ void handleArmOld()
       double currentPosition = Rotation.angle(deg);
       double error = targetDeg - currentPosition;
 
-      if (error > 180)
+      if (error > 240)
       {
         error -= 360;
       }
-      else if (error < -180)
+      else if (error < -240)
       {
         error += 360;
       }
