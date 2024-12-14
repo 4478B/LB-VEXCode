@@ -48,21 +48,22 @@ vex::thread intakeThread;
 void autonomous(void)
 {
   // intakeThread = vex::thread(colorSortRed);
-  colorSortRed();
-  /*
-    // Calibrates motor encoders to reduce drift
-    allMotors.setPosition(0, deg);
-    Rotation.resetPosition();
-    armMotors.setPosition(0, deg);
+  // colorSortRed();
 
-    // Performs selected autonomous route
-    getAutonSelector().runSelectedAuton();
+  // Calibrates motor encoders to reduce drift
+  allMotors.setPosition(0, deg);
+  Rotation.resetPosition();
+  armMotors.setPosition(0, deg);
 
-    // Stops motors to prevent crossing field
-    allMotors.stop();*/
+  // Performs selected autonomous route
+  getAutonSelector().runSelectedAuton();
+
+  // Stops motors to prevent crossing field
+  allMotors.stop();
 }
 
 bool clamp = false;
+bool doink = false;
 bool door = false;
 bool upInt = false;
 bool macro = false;
@@ -165,6 +166,16 @@ void handleIntake()
   }
 }
 
+void handleDoinky()
+{
+  if (Controller1.ButtonLeft.pressing())
+  {
+    doink = !doink; // Toggle clamp state
+    doinker.set(doink);
+    // Debounce delay to prevent multiple toggles
+    wait(240, msec);
+  }
+}
 void handleClamp()
 {
   if (Controller1.ButtonB.pressing())
@@ -180,7 +191,7 @@ void handleArmOld()
 {
 
   // cannot call the same pos twice
-  if ((Controller1.ButtonL1.pressing() || Controller2.ButtonL1.pressing()) && pidRunning == false && armPos != 1)
+  if ((Controller1.ButtonL1.pressing() || Controller2.ButtonL1.pressing()) && pidRunning == false)
   {
     pidRunning = true;   // starts the PID running
     armPos = 1;          // sets the position of the arm, stores in variable
@@ -188,22 +199,37 @@ void handleArmOld()
     targetDegInp = 0;    // tune according to motor encoder values
     // Event(setArmBottom);
   }
-  else if ((Controller1.ButtonL2.pressing() || Controller2.ButtonL2.pressing()) && pidRunning == false && armPos != 2)
+  else if ((Controller1.ButtonL2.pressing() || Controller2.ButtonL2.pressing()) && pidRunning == false)
   { // cannot call the same pos twice
     pidRunning = true;
     armPos = 2;
-    targetDegInpRot = 25; // rotation sensor value
+    targetDegInpRot = 34; // rotation sensor value
     targetDegInp = 65;    // tune according to motor encoder values, could be negative idk
     // Event2(setArmMid);
   }
-  else if ((Controller1.ButtonLeft.pressing() || Controller2.ButtonLeft.pressing()) && pidRunning == false && armPos != 3)
+  else if ((Controller1.ButtonDown.pressing() || Controller2.ButtonLeft.pressing()) && pidRunning == false)
   {
     pidRunning = true;
     armPos = 3;
-    targetDegInpRot = 131.5;
+    targetDegInpRot = 134;
     targetDegInp = 220;
     // Event3(setArmTop);
     // tune according to motor encoder values, could be negative idk
+  }
+  else if ((Controller1.ButtonRight.pressing() || Controller2.ButtonLeft.pressing()) && pidRunning == false)
+  {
+    pidRunning = true;
+    armPos = 3;
+    targetDegInpRot = 205;
+    targetDegInp = 220;
+    // Event3(setArmTop);
+    // tune according to motor encoder values, could be negative idk
+  }
+  else if (Controller1.ButtonUp.pressing())
+  {
+    pidRunning = false;
+    goalMet++;
+    definedVar = false;
   }
 
   /*
@@ -262,11 +288,11 @@ void handleArmOld()
       double currentPosition = Rotation.angle(deg);
       double error = targetDeg - currentPosition;
 
-      if (error > 180)
+      if (error > 240)
       {
         error -= 360;
       }
-      else if (error < -180)
+      else if (error < -240)
       {
         error += 360;
       }
@@ -367,7 +393,7 @@ void handleArm()
       pidThread.join(); // Ensure the previous thread is finished
     pidThread = vex::thread(setArmMid);
   }
-  else if ((Controller1.ButtonLeft.pressing() || Controller2.ButtonLeft.pressing()) && pidRunning == false && armPos != 3 && pidThread.joinable())
+  else if ((Controller1.ButtonDown.pressing() || Controller2.ButtonDown.pressing()) && pidRunning == false && armPos != 3 && pidThread.joinable())
   {
     {
       std::lock_guard<vex::mutex> lock(armMutex);
@@ -406,6 +432,7 @@ void usercontrol(void)
     handleIntake();
     handleClamp();
     handleArmOld();
+    handleDoinky();
 
     vex ::wait(20, msec);
   }
