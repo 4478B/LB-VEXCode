@@ -203,7 +203,7 @@ void handleArmOld()
   { // cannot call the same pos twice
     pidRunning = true;
     armPos = 2;
-    targetDegInpRot = 34; // rotation sensor value
+    targetDegInpRot = 33; // rotation sensor value
     targetDegInp = 65;    // tune according to motor encoder values, could be negative idk
     // Event2(setArmMid);
   }
